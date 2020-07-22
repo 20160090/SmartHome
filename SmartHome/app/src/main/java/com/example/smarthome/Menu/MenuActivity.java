@@ -75,9 +75,10 @@ public class MenuActivity extends AppCompatActivity {
         loc.addDevice(new Device("Staubsauger Steckdose", "Roomba s9+", SHOULD_NOT_BE_RUNNING, 0.20));
         loc.addDevice(new Device("Steckdose Schlafzimmer", "Fritz Dect 200/210", NOT_RUNNING, 0.0));
         loc.addDevice(new Device("Steckdose Wohnzimmer", "Fritz Dect 200/210", RUNNING, 0.0));
+        this.user.addLocation(loc);
         Location loc2 = new Location("Appartment", 1020);
         loc2.setDevices(loc.getDevices());
-        this.user.addLocation(loc);
+
         this.user.addLocation(loc2);
         this.user.setDisplayName(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName());
 

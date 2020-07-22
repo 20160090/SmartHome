@@ -5,12 +5,17 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.smarthome.Model.Location;
 import com.example.smarthome.Model.User;
 import com.example.smarthome.R;
 
@@ -78,33 +83,64 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        for(int i=0; i<user.getLocations().size(); i++){
-            View view1 = inflater.inflate(R.layout.fragment_home, container, false);
-            locationName=view1.findViewById(R.id.houseTv);
-            locationName.setText(user.getLocations().get(i).getName());
 
-            devices = view1.findViewById(R.id.devicesTv);
-            devices.setText("Geräte\n"+user.getLocations().get(i).getRunningNum()+" Geräte laufen");
-            int pos =i;
+        //ViewStub
+        /* for(int i=0; i<user.getLocations().size(); i++){
+            int num=i+1;
+            String name="vs"+""+num+"";
+            ViewStub viewStub = (ViewStub)view.findViewById(R.id.vs1);
+            viewStub.setLayoutResource(R.layout.fragment_profile);
+            viewStub.inflate();
+        }*/
+
+
+
+        /*LinearLayout locations_layout = (LinearLayout) view.findViewById(R.id.homeFL);
+        for (int i = 0; i < user.getLocations().size(); i++) {
+            Location location = user.getLocations().get(i);
+            View to_add = inflater.inflate(R.layout.location_element, locations_layout, false);
+            locationName = to_add.findViewById(R.id.houseTv);
+            locationName.setText(location.getName());
+
+            devices = to_add.findViewById(R.id.devicesTv);
+            devices.setText("Geräte\n" + location.getRunningNum() + " Geräte laufen");
             devices.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //((MenuActivity)getActivity()).fragmentChange(0);
-                    Bundle args = new Bundle();
-                    args.putInt("locationPos", 0);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("location", 0);
+
                     DevicesFragment devicesFragment = new DevicesFragment();
-                    devicesFragment.setArguments(args);
-                    FragmentTransaction transaction = Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
-                    transaction.replace(((ViewGroup)(getView().getParent())).getId(), devicesFragment);
+                    devicesFragment.setArguments(bundle);
+
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(((ViewGroup) (getView().getParent())).getId(), devicesFragment);
                     transaction.addToBackStack(null);
                     transaction.commit();
                 }
             });
-            container.addView(view1);
-        }
-        return container.findFocus();
+
+            locations_layout.addView(to_add);
+        }*/
+
+        return view;
     }
 
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        for(int i=0; i<user.getLocations().size(); i++){
+            Fragment location = LocationFragment.newInstance(i);
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            switch(i){
+                case 0: transaction.replace(R.id.fl1, location).commit(); break;
+                case 1: transaction.replace(R.id.fl2, location).commit(); break;
+                case 2: break;
+                case 3: break;
+                case 4: break;
+            }
+        }
+
+    }
 }
