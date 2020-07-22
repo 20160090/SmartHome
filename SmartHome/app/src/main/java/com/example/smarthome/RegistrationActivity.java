@@ -13,10 +13,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.smarthome.Menu.MenuActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -46,12 +48,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 registerUser();
             }
         });
-        FirebaseUser user =mAuth.getCurrentUser();
-        if(user!=null){
-            Intent Main = new Intent(RegistrationActivity.this, LoginActivity.class);
-            Main.putExtra("user", mAuth.getCurrentUser().getDisplayName());
-            startActivity(Main);
-        }
+        FirebaseUser user = mAuth.getCurrentUser();
+
     }
 
     @SuppressLint("ShowToast")
@@ -83,17 +81,29 @@ public class RegistrationActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(RegistrationActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
-                                progressBar.setVisibility(View.GONE);
+                                mAuth.getCurrentUser().sendEmailVerification()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(RegistrationActivity.this, "Registration successful! Please verify your email", Toast.LENGTH_LONG).show();
 
-                                Intent Main = new Intent(RegistrationActivity.this, LoginActivity.class);
-                                Main.putExtra("user", mAuth.getCurrentUser().getDisplayName());
-                                finish();
-                                startActivity(Main);
+                                                    progressBar.setVisibility(View.GONE);
 
+                                                    Intent Main = new Intent(RegistrationActivity.this, LoginActivity.class);
+                                                    finish();
+                                                    startActivity(Main);
+                                                }
+                                            }
+                                        });
                             } else {
-                                Toast.makeText(RegistrationActivity.this, "Authentication failed",
-                                        Toast.LENGTH_SHORT).show();
+                                switch(((FirebaseAuthException)task.getException()).getErrorCode()){
+                                    case "ERROR_INVALID_EMAIL": Toast.makeText(RegistrationActivity.this, "Please enter a correct email address", Toast.LENGTH_LONG).show(); break;
+                                    case "ERROR_WEAK_PASSWORD": Toast.makeText(RegistrationActivity.this, "Your password should have at least 6 chars", Toast.LENGTH_LONG).show(); break;
+                                    case "ERROR_EMAIL_ALREADY_IN_USE": Toast.makeText(RegistrationActivity.this, "This email address is already in", Toast.LENGTH_LONG).show(); break;
+                                    //TODO: weak password!!!!!!!!!!!!!!!!!
+                                    default: Toast.makeText(RegistrationActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                                }
                                 progressBar.setVisibility(View.GONE);
                             }
                         }
@@ -106,11 +116,5 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-    }
 
 }

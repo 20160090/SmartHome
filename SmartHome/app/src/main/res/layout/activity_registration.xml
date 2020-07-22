@@ -6,43 +6,70 @@
     android:layout_height="match_parent"
     android:gravity="top"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     tools:context=".RegistrationActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/regNewAccount" />
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="137dp" />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:autofillHints=""
+        android:background="@drawable/rounded_edittext"
         android:hint="@string/email"
-        android:inputType="text|textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="18sp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp" />
 
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:autofillHints=""
+        android:background="@drawable/rounded_edittext"
         android:hint="@string/password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="18sp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp" />
 
     <EditText
         android:id="@+id/passwordConfirm"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:autofillHints=""
+        android:background="@drawable/rounded_edittext"
         android:hint="@string/passwort_confirm"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="18sp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
 
     <Button
         android:id="@+id/register"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/register" />
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_log_sign"
+        android:text="@string/register"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
 
     <ProgressBar
         android:id="@+id/progressBar"

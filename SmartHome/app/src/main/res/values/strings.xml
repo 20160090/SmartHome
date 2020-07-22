@@ -7,4 +7,9 @@
     <string name="passwort_confirm">Passwort bestätigen</string>
     <string name="account_login">Account login</string>
     <string name="login">Login</string>
+    <string name="statisticTab">Statistik</string>
+    <string name="homeTab">Home</string>
+    <string name="profileTab">Profile</string>
+    <string name="signup">signup</string>
+    <string name="signout">SignOut</string>
 </resources>
