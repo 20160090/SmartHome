@@ -34,6 +34,8 @@ public class PagerAdapter extends FragmentStateAdapter {
         return 3;
     }
 
-
-
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
 }

@@ -5,18 +5,15 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.smarthome.Model.Location;
 import com.example.smarthome.Model.User;
 import com.example.smarthome.R;
-import com.example.smarthome.Menu.dummy.DummyContent;
 
 /**
  * A fragment representing a list of Items.
@@ -69,7 +66,7 @@ public class DevicesFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(location.getDevices()));
+            recyclerView.setAdapter(new DevicesRecycleViewAdapter(location.getDevices()));
         }
         return view;
     }

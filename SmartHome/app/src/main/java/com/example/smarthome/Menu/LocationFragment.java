@@ -31,6 +31,7 @@ public class LocationFragment extends Fragment {
     private Location location;
     private User user;
     private TextView devices;
+    private TextView producers;
     private TextView locationName;
     private int pos;
 
@@ -75,17 +76,22 @@ public class LocationFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
+                ((MenuActivity) getActivity()).changeFragment(bundle.getInt("locationPos"), 1);
+                /*
+                Bundle bundle = new Bundle();
                 bundle.putInt("location", bundle.getInt("locationPos"));
-
                 DevicesFragment devicesFragment = new DevicesFragment();
                 devicesFragment.setArguments(bundle);
 
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(((ViewGroup) (getView().getParent())).getId(), devicesFragment);
                 transaction.addToBackStack(null);
-                transaction.commit();
+                transaction.commit();*/
             }
         });
+
+        producers = view.findViewById(R.id.producerTv);
+        producers.setText("Photovoltaik\nMomentan erzeugte Wattstunden:  "+location.getCurrentEnergy()+" Wh");
         return view;
     }
 }

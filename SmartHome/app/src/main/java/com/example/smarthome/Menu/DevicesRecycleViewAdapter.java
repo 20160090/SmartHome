@@ -13,11 +13,11 @@ import com.example.smarthome.R;
 
 import java.util.List;
 
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class DevicesRecycleViewAdapter extends RecyclerView.Adapter<DevicesRecycleViewAdapter.ViewHolder> {
 
     private final List<Device> mValues;
 
-    public MyItemRecyclerViewAdapter(List<Device> items) {
+    public DevicesRecycleViewAdapter(List<Device> items) {
         mValues = items;
     }
 

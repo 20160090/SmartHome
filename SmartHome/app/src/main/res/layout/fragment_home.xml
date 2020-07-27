@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/homeFL"
@@ -8,29 +8,88 @@
     tools:context=".Menu.HomeFragment"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/fl1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <FrameLayout
-        android:id="@+id/fl2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <FrameLayout
-        android:id="@+id/fl3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <FrameLayout
-        android:id="@+id/fl4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <FrameLayout
-        android:id="@+id/fl5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <FrameLayout
-        android:id="@+id/fl6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/addBtn"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/round_add_button"
+        android:contextClickable="true"
+        android:foreground="@android:drawable/ic_input_add"
+        android:foregroundTint="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:id="@+id/fl1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/fl2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fl1" />
+
+            <FrameLayout
+                android:id="@+id/fl3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fl2">
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/fl4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fl2" />
+
+            <FrameLayout
+                android:id="@+id/fl5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fl4">
+
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,14 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.smarthome.LoginActivity;
 import com.example.smarthome.Model.Device;
 import com.example.smarthome.Model.Location;
+import com.example.smarthome.Model.Producer;
 import com.example.smarthome.Model.User;
 import com.example.smarthome.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Objects;
@@ -44,7 +43,7 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 tab.setText(TAB_TITLES[position]);
-                viewPager.setCurrentItem(tab.getPosition(), true);
+                viewPager.setCurrentItem(1, true);
             }
         }).attach();
 
@@ -54,15 +53,21 @@ public class MenuActivity extends AppCompatActivity {
 
     }
 
-    public void fragmentChange(int locationPos) {
-        Bundle args = new Bundle();
-        args.putInt("locationPos", locationPos);
-        DevicesFragment devicesFragment = new DevicesFragment();
-        devicesFragment.setArguments(args);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(getCurrentFocus().getId(),devicesFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    public void changeFragment(int locationPos, int type) {
+        if(type==1){
+            Bundle args = new Bundle();
+            args.putInt("locationPos", locationPos);
+            DevicesFragment devicesFragment = new DevicesFragment();
+            devicesFragment.setArguments(args);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.homeFL, devicesFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+        else{
+
+        }
+
     }
 
     public void dummy() {
@@ -75,9 +80,12 @@ public class MenuActivity extends AppCompatActivity {
         loc.addDevice(new Device("Staubsauger Steckdose", "Roomba s9+", SHOULD_NOT_BE_RUNNING, 0.20));
         loc.addDevice(new Device("Steckdose Schlafzimmer", "Fritz Dect 200/210", NOT_RUNNING, 0.0));
         loc.addDevice(new Device("Steckdose Wohnzimmer", "Fritz Dect 200/210", RUNNING, 0.0));
+        loc.addProducer(new Producer("Photovoltaik", "Fronius", "Test",30.1));
         this.user.addLocation(loc);
-        Location loc2 = new Location("Appartment", 1020);
+        Location loc2 = new Location("Appartment", 1020, "Wien","AT");
         loc2.setDevices(loc.getDevices());
+        loc2.setProducers(loc.getProducers());
+        loc2.addProducer(new Producer("Photovoltaik", "Fronius", "test1",25.7));
 
         this.user.addLocation(loc2);
         this.user.setDisplayName(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName());

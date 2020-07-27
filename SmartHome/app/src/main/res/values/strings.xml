@@ -12,6 +12,11 @@
     <string name="profileTab">Profile</string>
     <string name="signup">signup</string>
     <string name="signout">SignOut</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_new_location">Neuen Standort hinzufügen</string>
+    <string name="name">Name</string>
+    <string name="plz">PLZ</string>
+    <string name="country">Land</string>
+    <string name="city">Stadt</string>
+    <string name="weiter">weiter</string>
+    <string name="back">zurück</string>
 </resources>

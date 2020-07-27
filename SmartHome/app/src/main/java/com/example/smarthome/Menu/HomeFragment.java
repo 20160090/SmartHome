@@ -1,11 +1,13 @@
 package com.example.smarthome.Menu;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.smarthome.AddingLocationActivity;
 import com.example.smarthome.Model.Location;
 import com.example.smarthome.Model.User;
 import com.example.smarthome.R;
@@ -39,7 +42,10 @@ public class HomeFragment extends Fragment {
     private FrameLayout frameLayout;
     private TextView devices;
     private TextView locationName;
+    private Button add;
     private User user;
+
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -84,6 +90,14 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        add = view.findViewById(R.id.addBtn);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(getContext(), AddingLocationActivity.class);
+                startActivity(intent);
+            }
+        });
 
         //ViewStub
         /* for(int i=0; i<user.getLocations().size(); i++){
@@ -93,8 +107,6 @@ public class HomeFragment extends Fragment {
             viewStub.setLayoutResource(R.layout.fragment_profile);
             viewStub.inflate();
         }*/
-
-
 
         /*LinearLayout locations_layout = (LinearLayout) view.findViewById(R.id.homeFL);
         for (int i = 0; i < user.getLocations().size(); i++) {
@@ -134,7 +146,14 @@ public class HomeFragment extends Fragment {
             Fragment location = LocationFragment.newInstance(i);
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             switch(i){
-                case 0: transaction.replace(R.id.fl1, location).commit(); break;
+                case 0: transaction.replace(R.id.fl1, location);
+                            //nur zum testen
+                    Fragment a = LocationFragment.newInstance(1);
+                    transaction.replace(R.id.fl3, a);
+                    Fragment b = LocationFragment.newInstance(1);
+                    transaction.replace(R.id.fl4, b);
+                    Fragment c = LocationFragment.newInstance(1);
+                    transaction.replace(R.id.fl5, c).commit();break;
                 case 1: transaction.replace(R.id.fl2, location).commit(); break;
                 case 2: break;
                 case 3: break;
