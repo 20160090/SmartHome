@@ -3,13 +3,10 @@ package com.example.smarthome.Menu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,14 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.smarthome.AddingLocationActivity;
-import com.example.smarthome.Model.Location;
+import com.example.smarthome.Adding.AddingLocationActivity;
 import com.example.smarthome.Model.User;
 import com.example.smarthome.R;
-
-import org.xmlpull.v1.XmlPullParser;
-
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.

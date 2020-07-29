@@ -11,8 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DeviceProducerActivity"></activity>
-        <activity android:name=".AddingLocationActivity" />
+        <activity android:name=".Adding.AddingProducerActivity"></activity>
+        <activity android:name=".Adding.AddingDeviceActivity" />
+        <activity android:name=".DeviceProducerActivity" />
+        <activity android:name=".Adding.AddingLocationActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

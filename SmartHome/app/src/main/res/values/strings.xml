@@ -19,4 +19,15 @@
     <string name="city">Stadt</string>
     <string name="weiter">weiter</string>
     <string name="back">zurück</string>
+    <string name="devices">Geräte</string>
+    <string name="producer">Stromerzeuger</string>
+    <string name="no_producer">Noch keine Stromerzeuger vorhanden.\nBitte hinzufügen</string>
+    <string name="no_devices">Noch keine Geräte vorhanden.\n Bitte hinzufügen</string>
+    <string name="no_produer_no_devices">Bitte fügen Sie zuerst Stromerzeuger und Geräte hinzu</string>
+    <string name="adding_device">Neues Gerät hinzufügen</string>
+    <string name="type">Typ</string>
+    <string name="manufacturer">Hersteller</string>
+    <string name="fill_in_all">Bitte füllen Sie alle Felder aus</string>
+    <string name="adding_producer">Neuen Stromerzeuger hinzufügen</string>
+    <string name="add">hinzufügen</string>
 </resources>

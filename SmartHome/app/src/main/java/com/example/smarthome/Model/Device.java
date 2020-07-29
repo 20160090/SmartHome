@@ -17,22 +17,27 @@ public class Device {
 
 
 
-    private String name, type;
+    private String name, type, manufacturer;
     private String state;
     private double averageConsumption;
 
     public Device() {
         this.name = "unknown";
         this.type = "unknown";
+        this.manufacturer = "unknown";
         this.state = NOT_RUNNING;
         this.averageConsumption = 0.0;
     }
 
-    public Device(String name, String type, String state, double averageConsumption) {
+    public Device(String name, String type, String manufacturer, String state, double averageConsumption) {
         this.name = name;
         this.type = type;
         this.state = state;
+        this.manufacturer = manufacturer;
         this.averageConsumption = averageConsumption;
+    }
+    public Device (String name, String type, String manufacturer){
+        this(name,type,manufacturer,NOT_RUNNING,0.0);
     }
 
     public String getName() {

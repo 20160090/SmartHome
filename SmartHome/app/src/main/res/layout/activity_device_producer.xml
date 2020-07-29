@@ -9,6 +9,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="85dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -17,59 +19,59 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/producer"
+            <include layout="@layout/producer_list" />
+
+            <TextView
+                android:id="@+id/noProducerTv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="@string/no_producer"
+                android:textAlignment="center"
+                android:visibility="gone" />
 
-                <Button
-                    android:id="@+id/addProducer"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/round_add_button"
-                    android:contextClickable="true"
-                    android:foreground="@android:drawable/ic_input_add"
-                    android:foregroundTint="#FFFFFF"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/producerRV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/addProducer" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/devices"
+            <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="15dp" />
 
-                <Button
-                    android:id="@+id/addDevice"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/round_add_button"
-                    android:contextClickable="true"
-                    android:foreground="@android:drawable/ic_input_add"
-                    android:foregroundTint="#FFFFFF"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <include layout="@layout/devices_list" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/deviceRV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/addDevice" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/noDevicesTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_devices"
+                android:textAlignment="center"
+                android:visibility="gone" />
 
 
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/continueBtn"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="35dp"
+        android:text="@string/weiter"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/backBtn"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/rounded_log_sign"
+        android:text="@string/back"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/continueBtn"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

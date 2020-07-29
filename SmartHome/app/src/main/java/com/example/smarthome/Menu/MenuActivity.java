@@ -74,12 +74,12 @@ public class MenuActivity extends AppCompatActivity {
         Location loc = new Location();
         loc.setName("Zu Hause");
         loc.setZip(4300);
-        loc.addDevice(new Device("Waschmaschine", "Samsung AddWash WW4500K", RUNNING, 0.78));
-        loc.addDevice(new Device("Trockner", "DV5000M Trockner", NOT_RUNNING, 0.90));
-        loc.addDevice(new Device("Geschirspüler", "SDW7500", SHOULD_BE_RUNNING, 83));
-        loc.addDevice(new Device("Staubsauger Steckdose", "Roomba s9+", SHOULD_NOT_BE_RUNNING, 0.20));
-        loc.addDevice(new Device("Steckdose Schlafzimmer", "Fritz Dect 200/210", NOT_RUNNING, 0.0));
-        loc.addDevice(new Device("Steckdose Wohnzimmer", "Fritz Dect 200/210", RUNNING, 0.0));
+        loc.addDevice(new Device("Waschmaschine", "Samsung AddWash WW4500K", "Hersteller", RUNNING, 0.78));
+        loc.addDevice(new Device("Trockner", "DV5000M Trockner", "Hersteller", NOT_RUNNING, 0.90));
+        loc.addDevice(new Device("Geschirspüler", "SDW7500", "Hersteller", SHOULD_BE_RUNNING, 83));
+        loc.addDevice(new Device("Staubsauger Steckdose", "Roomba s9+", "Hersteller", SHOULD_NOT_BE_RUNNING, 0.20));
+        loc.addDevice(new Device("Steckdose Schlafzimmer", "Fritz Dect 200/210", "Hersteller", NOT_RUNNING, 0.0));
+        loc.addDevice(new Device("Steckdose Wohnzimmer", "Fritz Dect 200/210", "Hersteller", RUNNING, 0.0));
         loc.addProducer(new Producer("Photovoltaik", "Fronius", "Test",30.1));
         this.user.addLocation(loc);
         Location loc2 = new Location("Appartment", 1020, "Wien","AT");

@@ -1,24 +1,23 @@
-package com.example.smarthome;
+package com.example.smarthome.Adding;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.smarthome.DeviceProducerActivity;
 import com.example.smarthome.Model.Location;
 import com.example.smarthome.Model.User;
-
-import org.w3c.dom.Text;
+import com.example.smarthome.R;
 
 public class AddingLocationActivity extends AppCompatActivity {
-    User user;
+    private User user;
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +25,8 @@ public class AddingLocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_adding_location);
 
         user = User.getInstance();
+        location = new Location();
+        user.getLocations().add(location);
 
         Button back = findViewById(R.id.backBtn);
         back.setOnClickListener(new View.OnClickListener() {
@@ -42,19 +43,22 @@ public class AddingLocationActivity extends AppCompatActivity {
         con.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* if (TextUtils.isEmpty(name.getText()) || TextUtils.isEmpty(country.getText()) || TextUtils.isEmpty(zip.getText()) || TextUtils.isEmpty(city.getText())) {
-                    Toast.makeText(AddingLocationActivity.this, "Please fill in all fields", Toast.LENGTH_LONG).show();
+               if (TextUtils.isEmpty(name.getText()) || TextUtils.isEmpty(country.getText()) || TextUtils.isEmpty(zip.getText()) || TextUtils.isEmpty(city.getText())) {
+                    Toast.makeText(AddingLocationActivity.this, getResources().getString(R.string.fill_in_all), Toast.LENGTH_LONG).show();
                 } else {
-                    Location location = new Location(name.getText().toString(), Integer.parseInt(zip.getText().toString()), city.getText().toString(), country.getText().toString());
-*/
+                    location.setName(name.getText().toString());
+                    location.setCountry(country.getText().toString());
+                    location.setZip(Integer.parseInt(zip.getText().toString()));
+                    location.setCity(city.getText().toString());
+
                     Bundle bundle = new Bundle();
-                    bundle.putInt("locationPos", 0);
+                    bundle.putInt("locationPos", user.getLocations().size()-1);
 
                     Intent intent = new Intent(AddingLocationActivity.this, DeviceProducerActivity.class);
                     intent.putExtras(bundle);
                     startActivity(intent);
 
-                //}
+                }
             }
         });
     }
@@ -62,5 +66,6 @@ public class AddingLocationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        this.user.getLocations().remove(user.getLocations().size()-1);
     }
 }

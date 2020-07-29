@@ -23,7 +23,7 @@ public class Location {
         this.country = country;
         this.name = name;
         this.devices = new ArrayList<Device>();
-        this.producers= new ArrayList<Producer>();
+        this.producers = new ArrayList<Producer>();
     }
 
     public Location(String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers) {
@@ -37,7 +37,8 @@ public class Location {
         this.devices.add(device);
         //Server??
     }
-    public void addProducer(Producer producer){
+
+    public void addProducer(Producer producer) {
         this.producers.add(producer);
     }
 
@@ -50,10 +51,11 @@ public class Location {
         }
         return count;
     }
-    public double getCurrentEnergy(){
-        double energy=0;
-        for(int i=0; i<producers.size(); i++){
-            energy+=producers.get(i).getCurrentlyProduced();
+
+    public double getCurrentEnergy() {
+        double energy = 0;
+        for (int i = 0; i < producers.size(); i++) {
+            energy += producers.get(i).getCurrentlyProduced();
         }
         return energy;
     }
@@ -107,4 +109,13 @@ public class Location {
         this.devices.clear();
         this.devices.addAll(devices);
     }
+
+    public boolean equalsNoDevices(Location location) {
+        if (this.name.equals(location.getName()) && this.country.equals(location.getCountry()) && this.zip == location.getZip()&& this.city.equals(location.getCity())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
