@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">Smart Home</string>
-    <string name="regNewAccount">Register new account</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
     <string name="passwort_confirm">Passwort bestätigen</string>
-    <string name="account_login">Account login</string>
     <string name="login">Login</string>
     <string name="statisticTab">Statistik</string>
     <string name="homeTab">Home</string>
@@ -13,16 +11,18 @@
     <string name="signup">signup</string>
     <string name="signout">SignOut</string>
     <string name="add_new_location">Neuen Standort hinzufügen</string>
+    <string name="edit_location">Standort bearbeiten</string>
+    <string name="remove_location">Standort entfernen</string>
+    <string name="really_delete_location">Möchten Sie diesen Standort wirklich entfernen?</string>
     <string name="name">Name</string>
     <string name="plz">PLZ</string>
     <string name="country">Land</string>
     <string name="city">Stadt</string>
-    <string name="weiter">weiter</string>
-    <string name="back">zurück</string>
     <string name="devices">Geräte</string>
     <string name="producer">Stromerzeuger</string>
     <string name="no_producer">Noch keine Stromerzeuger vorhanden.\nBitte hinzufügen</string>
     <string name="no_devices">Noch keine Geräte vorhanden.\n Bitte hinzufügen</string>
+    <string name="no_location">Noch kein Standort vorhanden.\nBitte hinzufügen</string>
     <string name="no_produer_no_devices">Bitte fügen Sie zuerst Stromerzeuger und Geräte hinzu</string>
     <string name="adding_device">Neues Gerät hinzufügen</string>
     <string name="type">Typ</string>
@@ -30,4 +30,15 @@
     <string name="fill_in_all">Bitte füllen Sie alle Felder aus</string>
     <string name="adding_producer">Neuen Stromerzeuger hinzufügen</string>
     <string name="add">hinzufügen</string>
+    <string name="done">fertig</string>
+    <string name="state">status</string>
+    <string name="run">Einschalten</string>
+    <string name="stop">Ausschalten</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="delete">löschen</string>
+    <string name="remove">entfernen</string>
+    <string name="save">speichern</string>
+    <string name="yes">ja</string>
+    <string name="no">nein</string>
+
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Menu.MenuActivity">
+    tools:context=".menu.MenuActivity">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabBar"
@@ -17,19 +17,16 @@
         app:tabTextColor="@color/colorPrimaryDark">
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabStatistik"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/statisticTab" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabHome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/homeTab" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/tabProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/profileTab" />

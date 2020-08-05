@@ -13,18 +13,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.smarthome.Menu.MenuActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Objects;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     private EditText emailEt, passwordEt, passwordConEt;
-    private Button regBtn;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
@@ -39,7 +38,7 @@ public class RegistrationActivity extends AppCompatActivity {
         emailEt = findViewById(R.id.email);
         passwordEt = findViewById(R.id.password);
         passwordConEt = findViewById(R.id.passwordConfirm);
-        regBtn = findViewById(R.id.register);
+        Button regBtn = findViewById(R.id.register);
         progressBar = findViewById(R.id.progressBar);
 
         regBtn.setOnClickListener(new View.OnClickListener() {
@@ -48,7 +47,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 registerUser();
             }
         });
-        FirebaseUser user = mAuth.getCurrentUser();
 
     }
 
@@ -81,7 +79,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                mAuth.getCurrentUser().sendEmailVerification()
+                                Objects.requireNonNull(mAuth.getCurrentUser()).sendEmailVerification()
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -97,7 +95,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                             }
                                         });
                             } else {
-                                switch(((FirebaseAuthException)task.getException()).getErrorCode()){
+                                switch(((FirebaseAuthException) Objects.requireNonNull(task.getException())).getErrorCode()){
                                     case "ERROR_INVALID_EMAIL": Toast.makeText(RegistrationActivity.this, "Please enter a correct email address", Toast.LENGTH_LONG).show(); break;
                                     case "ERROR_WEAK_PASSWORD": Toast.makeText(RegistrationActivity.this, "Your password should have at least 6 chars", Toast.LENGTH_LONG).show(); break;
                                     case "ERROR_EMAIL_ALREADY_IN_USE": Toast.makeText(RegistrationActivity.this, "This email address is already in", Toast.LENGTH_LONG).show(); break;
@@ -110,7 +108,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     });
         } else {
             Toast.makeText(RegistrationActivity.this, "Ka wos ma do schreim soid... Vatippt??", Toast.LENGTH_LONG).show();
-            return;
         }
 
 

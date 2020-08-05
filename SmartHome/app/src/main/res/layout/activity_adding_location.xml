@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Adding.AddingLocationActivity">
+    tools:context=".adding.AddingLocationActivity">
 
     <TextView
         android:id="@+id/headingTv"
@@ -97,8 +97,6 @@
         android:id="@+id/continueBtn"
         android:layout_width="200dp"
         android:layout_height="45dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="5dp"
         android:layout_marginBottom="35dp"
         android:background="@drawable/rounded_log_sign"
         android:text="@string/add"
@@ -106,20 +104,6 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/backBtn" />
-
-    <Button
-        android:id="@+id/backBtn"
-        android:layout_width="200dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="35dp"
-        android:background="@drawable/rounded_log_sign"
-        android:text="@string/back"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/continueBtn"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

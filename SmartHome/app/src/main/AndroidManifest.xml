@@ -11,10 +11,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Adding.AddingProducerActivity"></activity>
-        <activity android:name=".Adding.AddingDeviceActivity" />
+        <activity android:name=".LocationDetailActivity" />
+        <activity
+            android:name=".adding.AddingProducerActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name=".adding.AddingDeviceActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name=".adding.AddingLocationActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity android:name=".DeviceProducerActivity" />
-        <activity android:name=".Adding.AddingLocationActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Menu.MenuActivity" />
+        <activity android:name=".menu.MenuActivity" />
         <activity android:name=".RegistrationActivity" />
     </application>
 

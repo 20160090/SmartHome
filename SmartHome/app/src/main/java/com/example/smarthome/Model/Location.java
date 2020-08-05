@@ -1,6 +1,7 @@
-package com.example.smarthome.Model;
+package com.example.smarthome.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Location {
     private ArrayList<Device> devices;
@@ -11,8 +12,8 @@ public class Location {
     private String country;
 
     public Location() {
-        this.devices = new ArrayList<Device>();
-        this.producers = new ArrayList<Producer>();
+        this.devices = new ArrayList<>();
+        this.producers = new ArrayList<>();
         this.zip = 0;
         this.name = "unknown";
     }
@@ -22,8 +23,8 @@ public class Location {
         this.city = city;
         this.country = country;
         this.name = name;
-        this.devices = new ArrayList<Device>();
-        this.producers = new ArrayList<Producer>();
+        this.devices = new ArrayList<>();
+        this.producers = new ArrayList<>();
     }
 
     public Location(String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers) {
@@ -35,6 +36,7 @@ public class Location {
 
     public void addDevice(Device device) {
         this.devices.add(device);
+        Collections.sort(devices);
         //Server??
     }
 
@@ -45,7 +47,7 @@ public class Location {
     public int getRunningNum() {
         int count = 0;
         for (int i = 0; i < devices.size(); i++) {
-            if (devices.get(i).getState() == Device.RUNNING) {
+            if (devices.get(i).getState().equals(Device.RUNNING)) {
                 count++;
             }
         }
@@ -65,6 +67,7 @@ public class Location {
     }
 
     public void setDevices(ArrayList<Device> devices) {
+        Collections.sort(devices);
         this.devices.clear();
         this.devices.addAll(devices);
     }
@@ -86,7 +89,7 @@ public class Location {
     }
 
     public String getCity() {
-        return city;
+        return this.city;
     }
 
     public void setCity(String city) {
@@ -94,7 +97,7 @@ public class Location {
     }
 
     public String getCountry() {
-        return country;
+        return this.country;
     }
 
     public void setCountry(String country) {
@@ -106,16 +109,11 @@ public class Location {
     }
 
     public void setProducers(ArrayList<Producer> producers) {
-        this.devices.clear();
-        this.devices.addAll(devices);
+        this.producers.clear();
+        this.producers.addAll(producers);
     }
-
-    public boolean equalsNoDevices(Location location) {
-        if (this.name.equals(location.getName()) && this.country.equals(location.getCountry()) && this.zip == location.getZip()&& this.city.equals(location.getCity())) {
-            return true;
-        } else {
-            return false;
-        }
+    public String getZipString(){
+        return ""+this.zip+"";
     }
 
 }

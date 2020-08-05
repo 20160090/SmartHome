@@ -1,28 +1,34 @@
-package com.example.smarthome.Menu;
+package com.example.smarthome.menu;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.smarthome.Adding.AddingLocationActivity;
-import com.example.smarthome.Model.User;
+import com.example.smarthome.adding.AddingLocationActivity;
+import com.example.smarthome.model.User;
 import com.example.smarthome.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Text;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class HomeFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -30,37 +36,24 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private FrameLayout mainFrameLayout;
-    private FrameLayout frameLayout;
-    private TextView devices;
-    private TextView locationName;
-    private Button add;
+    //private FrameLayout mainFrameLayout;
+    //private FrameLayout frameLayout;
+    //private TextView devices;
+    //private TextView locationName;
+    private FloatingActionButton add;
     private User user;
+    private TextView noLocation;
+    private ScrollView sv;
 
-
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,90 +61,120 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        // TODO: Rename and change types of parameters
         user = User.getInstance();
 
 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        add = view.findViewById(R.id.addBtn);
+        add = view.findViewById(R.id.addFAB);
+        noLocation = view.findViewById(R.id.noLocation);
+
+        //TODO: bessere Lösung...
+        MenuActivity menuActivity = (MenuActivity) getActivity();
+        ViewPager2 viewPager2 = Objects.requireNonNull(menuActivity).getViewPager();
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if(position==1){
+                    add.setVisibility(View.VISIBLE);
+                }
+                else{
+                    add.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(getContext(), AddingLocationActivity.class);
+                Intent intent = new Intent(getContext(), AddingLocationActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("locationPos", -1);
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
 
-        //ViewStub
-        /* for(int i=0; i<user.getLocations().size(); i++){
-            int num=i+1;
-            String name="vs"+""+num+"";
-            ViewStub viewStub = (ViewStub)view.findViewById(R.id.vs1);
-            viewStub.setLayoutResource(R.layout.fragment_profile);
-            viewStub.inflate();
-        }*/
 
-        /*LinearLayout locations_layout = (LinearLayout) view.findViewById(R.id.homeFL);
-        for (int i = 0; i < user.getLocations().size(); i++) {
-            Location location = user.getLocations().get(i);
-            View to_add = inflater.inflate(R.layout.location_element, locations_layout, false);
-            locationName = to_add.findViewById(R.id.houseTv);
-            locationName.setText(location.getName());
-
-            devices = to_add.findViewById(R.id.devicesTv);
-            devices.setText("Geräte\n" + location.getRunningNum() + " Geräte laufen");
-            devices.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("location", 0);
-
-                    DevicesFragment devicesFragment = new DevicesFragment();
-                    devicesFragment.setArguments(bundle);
-
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(((ViewGroup) (getView().getParent())).getId(), devicesFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                }
-            });
-
-            locations_layout.addView(to_add);
-        }*/
 
         return view;
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        for(int i=0; i<user.getLocations().size(); i++){
-            Fragment location = LocationFragment.newInstance(i);
+        locations();
+
+    }
+
+    public void locations(){
+
+        FragmentTransaction transaction1 = getChildFragmentManager().beginTransaction();
+        Fragment fragment1 = getChildFragmentManager().findFragmentByTag("location1");
+        Fragment fragment2 = getChildFragmentManager().findFragmentByTag("location2");
+        Fragment fragment3 = getChildFragmentManager().findFragmentByTag("location3");
+        Fragment fragment4 = getChildFragmentManager().findFragmentByTag("location4");
+        Fragment fragment5 = getChildFragmentManager().findFragmentByTag("location5");
+        if(fragment1!=null){
+            transaction1.remove(fragment1);
+        }
+        if(fragment2!=null){
+            transaction1.remove(fragment2);
+        }
+        if(fragment3!=null){
+            transaction1.remove(fragment3);
+        }
+        if(fragment4!=null){
+            transaction1.remove(fragment4);
+        }
+        if(fragment5!=null){
+            transaction1.remove(fragment5);
+        }
+        transaction1.commit();
+
+        for (int i = 0; i < user.getLocations().size(); i++) {
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            switch(i){
-                case 0: transaction.replace(R.id.fl1, location);
-                            //nur zum testen
-                    Fragment a = LocationFragment.newInstance(1);
-                    transaction.replace(R.id.fl3, a);
-                    Fragment b = LocationFragment.newInstance(1);
-                    transaction.replace(R.id.fl4, b);
-                    Fragment c = LocationFragment.newInstance(1);
-                    transaction.replace(R.id.fl5, c).commit();break;
-                case 1: transaction.replace(R.id.fl2, location).commit(); break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
+            Fragment location = LocationFragment.newInstance(i);
+
+
+            switch (i) {
+                case 0:
+                    transaction.replace(R.id.fl1, location, "location1").commit();
+                    break;
+                case 1:
+                    transaction.replace(R.id.fl2, location, "location2").commit();
+                    break;
+                case 2:
+                    transaction.replace(R.id.fl3, location, "location3").commit();
+                    break;
+                case 3:
+                    transaction.replace(R.id.fl4, location, "location4").commit();
+                    break;
+                case 4:
+                    transaction.replace(R.id.fl5, location, "location5").commit();
+                    add.setVisibility(View.GONE);
+                    break;
             }
         }
+        if(user.getLocations().size()==0){
+            noLocation.setVisibility(View.VISIBLE);
 
+        }
+        else{
+            noLocation.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        locations();
     }
 }

@@ -6,25 +6,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.smarthome.Menu.MenuActivity;
+import com.example.smarthome.menu.MenuActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
 
-    private EditText emailEt, passwordEt, passwordConEt;
-    private Button loginBtn, signupBtn;
+    private EditText emailEt, passwordEt;
     private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
@@ -39,8 +39,8 @@ public class LoginActivity extends AppCompatActivity {
         emailEt = findViewById(R.id.email);
         passwordEt = findViewById(R.id.password);
 
-        loginBtn = findViewById(R.id.loginBtn);
-        signupBtn = findViewById(R.id.signupBtn);
+        Button loginBtn = findViewById(R.id.loginBtn);
+        Button signupBtn = findViewById(R.id.signupBtn);
 
         progressBar = findViewById(R.id.progressBar);
 
@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    if (mAuth.getCurrentUser().isEmailVerified()) {
+                    if (Objects.requireNonNull(mAuth.getCurrentUser()).isEmailVerified()) {
                         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_LONG).show();
                         progressBar.setVisibility(View.GONE);
 
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Please verify your email first.", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    switch (((FirebaseAuthException) task.getException()).getErrorCode()) {
+                    switch (((FirebaseAuthException) Objects.requireNonNull(task.getException())).getErrorCode()) {
                         case "ERROR_USER_NOT_FOUND":
                             Toast.makeText(LoginActivity.this, "Pleas signup first", Toast.LENGTH_LONG).show();
                             break;
@@ -120,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
-        return;
     }
 
 }

@@ -2,32 +2,37 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/homeFL"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Menu.HomeFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".menu.HomeFragment">
 
-    <Button
-        android:id="@+id/addBtn"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="15dp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/round_add_button"
-        android:contextClickable="true"
-        android:foreground="@android:drawable/ic_input_add"
-        android:foregroundTint="#FFFFFF"
+        android:scaleType="center"
+        android:tint="@android:color/white"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:srcCompat="@android:drawable/ic_input_add" />
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <FrameLayout
                 android:id="@+id/fl1"
@@ -91,5 +96,18 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/noLocation"
+        android:layout_width="0dp"
+        android:layout_height="29dp"
+        android:text="@string/no_location"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

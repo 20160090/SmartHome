@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Adding.AddingDeviceActivity">
+    tools:context=".adding.AddingDeviceActivity">
 
     <EditText
         android:id="@+id/nameEt"
@@ -80,7 +80,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/conditionsRv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="10dp"
@@ -91,25 +90,9 @@
         app:layout_constraintTop_toBottomOf="@+id/manufacturerEt" />
 
     <Button
-        android:id="@+id/backBtn"
-        android:layout_width="200dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="35dp"
-        android:background="@drawable/rounded_log_sign"
-        android:text="@string/back"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/continueBtn"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
         android:id="@+id/continueBtn"
         android:layout_width="200dp"
         android:layout_height="45dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_marginBottom="35dp"
         android:background="@drawable/rounded_log_sign"
         android:text="@string/add"
@@ -117,5 +100,5 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/backBtn" />
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

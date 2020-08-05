@@ -1,11 +1,12 @@
-package com.example.smarthome.Model;
+package com.example.smarthome.model;
 
 import java.util.ArrayList;
 
 public class User {
-    private static User user = new User();
-    private ArrayList<Location> locations = new ArrayList<Location>();
+    private static final User user = new User();
+    private ArrayList<Location> locations = new ArrayList<>();
     private String displayName = "", role = "";
+    private Weather weather = new Weather();
 
     public User() {
     }
@@ -40,6 +41,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Weather getWeather() {
+        return this.weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
     }
 }
 
