@@ -10,12 +10,16 @@ public class Location {
     private int zip;
     private String city;
     private String country;
+    private Weather weather;
 
     public Location() {
         this.devices = new ArrayList<>();
         this.producers = new ArrayList<>();
         this.zip = 0;
         this.name = "unknown";
+        this.city="unknown";
+        this.country = "unknown";
+        this.weather = new Weather();
     }
 
     public Location(String name, int zip, String city, String country) {

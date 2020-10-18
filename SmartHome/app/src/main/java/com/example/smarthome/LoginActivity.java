@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (mAuth.getCurrentUser() != null) {
             if (mAuth.getCurrentUser().isEmailVerified()) {
+                Toast.makeText(LoginActivity.this, mAuth.getCurrentUser().getEmail(), Toast.LENGTH_LONG).show();
                 finish();
                 Intent Main = new Intent(LoginActivity.this, MenuActivity.class);
                 startActivity(Main);

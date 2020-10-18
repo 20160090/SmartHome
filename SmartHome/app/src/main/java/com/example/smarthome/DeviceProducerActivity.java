@@ -109,13 +109,13 @@ public class DeviceProducerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 closeFABMenu();
-                Intent intent = new Intent(DeviceProducerActivity.this, AddingProducerActivity.class);
+                /*Intent intent = new Intent(DeviceProducerActivity.this, AddingProducerActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("locationPos", locationPos);
                 bundle.putInt("producerPos",-1);
                 intent.putExtras(bundle);
 
-                startActivity(intent);
+                startActivity(intent);*/
                 adapterProducer.notifyDataSetChanged();
                 texts();
             }

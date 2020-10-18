@@ -59,12 +59,12 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.edit:
-                                Intent intent = new Intent(context, AddingProducerActivity.class);
+                                /*Intent intent = new Intent(context, AddingProducerActivity.class);
                                 Bundle bundle = new Bundle();
                                 bundle.putInt("locationPos", locationPos);
                                 bundle.putInt("producerPos", position);
                                 intent.putExtras(bundle);
-                                context.startActivity(intent);
+                                context.startActivity(intent);*/
                                 mValues.set(position,producer);
                                 notifyItemChanged(position);
                                 break;

@@ -6,7 +6,6 @@ public class User {
     private static final User user = new User();
     private ArrayList<Location> locations = new ArrayList<>();
     private String displayName = "", role = "";
-    private Weather weather = new Weather();
 
     public User() {
     }
@@ -43,13 +42,6 @@ public class User {
         this.role = role;
     }
 
-    public Weather getWeather() {
-        return this.weather;
-    }
-
-    public void setWeather(Weather weather) {
-        this.weather = weather;
-    }
 }
 
 

@@ -11,11 +11,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.example.smarthome.adding.AddingDeviceActivity;
@@ -34,6 +37,11 @@ public class LocationDetailActivity extends AppCompatActivity {
     private int CHANGED = 1;
     private boolean isFABOpen;
     private int locationPos;
+
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
+    private EditText pvId;
+    private Button pvCancel, pvAdd;
 
 
     @SuppressLint("SetTextI18n")
@@ -139,12 +147,13 @@ public class LocationDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 closeFABMenu();
-                Intent intent = new Intent(LocationDetailActivity.this, AddingProducerActivity.class);
+                /*Intent intent = new Intent(LocationDetailActivity.this, AddingProducerActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("locationPos", locationPos);
                 bundle.putInt("producerPos", -1);
                 intent.putExtras(bundle);
-                startActivity(intent);
+                startActivity(intent);*/
+                addPv();
                 adapterProducer.notifyDataSetChanged();
                 texts();
             }
@@ -215,6 +224,33 @@ public class LocationDetailActivity extends AppCompatActivity {
                 startActivity(getIntent());
             }
         }
+    }
+
+    public void addPv(){
+        builder = new AlertDialog.Builder(this);
+        final View pvPopupView = getLayoutInflater().inflate(R.layout.popup, null);
+        pvId = (EditText)pvPopupView.findViewById(R.id.pvId);
+
+        pvAdd = (Button)pvPopupView.findViewById(R.id.continueBtn);
+        pvCancel = (Button)pvPopupView.findViewById(R.id.backBtn);
+
+        builder.setView(pvPopupView);
+        dialog = builder.create();
+        dialog.show();
+
+        pvAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        pvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
     }
 
 }

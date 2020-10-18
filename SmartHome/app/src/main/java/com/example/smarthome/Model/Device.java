@@ -7,6 +7,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Comparator;
 
 public class Device implements Comparable<Device> {
+
+    public static final String RUNNING = "läuft";
+    public static final String NOT_RUNNING = "Sollte nicht eingeschalten werden";
+    public static final String SHOULD_BE_RUNNING = "Sollte eingeschalten werden";
+    public static final String SHOULD_NOT_BE_RUNNING = "Sollte nicht eingeschalten sein";
+
+
+    private String name, type, manufacturer, state;
+    private double averageConsumption;
     @Override
     public int compareTo(Device device) {
         int sol = 0;
@@ -50,15 +59,6 @@ public class Device implements Comparable<Device> {
     @interface DeviceState {
     }
 
-    public static final String RUNNING = "läuft";
-    public static final String NOT_RUNNING = "Sollte nicht eingeschalten werden";
-    public static final String SHOULD_BE_RUNNING = "Sollte eingeschalten werden";
-    public static final String SHOULD_NOT_BE_RUNNING = "Sollte nicht eingeschalten sein";
-
-
-    private String name, type, manufacturer;
-    private String state;
-    private double averageConsumption;
 
     public Device() {
         this.name = "unknown";

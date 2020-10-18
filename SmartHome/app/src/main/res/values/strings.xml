@@ -40,5 +40,13 @@
     <string name="save">speichern</string>
     <string name="yes">ja</string>
     <string name="no">nein</string>
+    <string name="back">zurück</string>
+
+    <string name="event">
+        {\"sunrise\":\"1597723220\",\"sunset\":\"1597774231\",\"dt\":\"1597731178\",\"description\":\"few clouds\"}
+    </string>
+    <string name="photovoltaikid">PhotovoltaikID</string>
+    <string name="add_photovoltaik">Photovoltaik hinzufügen</string>
+
 
 </resources>

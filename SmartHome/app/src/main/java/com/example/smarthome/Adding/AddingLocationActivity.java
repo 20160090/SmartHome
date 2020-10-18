@@ -17,6 +17,8 @@ import com.example.smarthome.model.Location;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 
+import java.util.*;
+
 public class AddingLocationActivity extends AppCompatActivity {
     private User user;
     private Location location;
@@ -32,17 +34,12 @@ public class AddingLocationActivity extends AppCompatActivity {
 
         Button con = findViewById(R.id.continueBtn);
         final TextView name = findViewById(R.id.nameEt);
-        final TextView country = findViewById(R.id.countryEt);
-        final TextView zip = findViewById(R.id.zipEt);
-        final TextView city = findViewById(R.id.cityEt);
+        final TextView pvId = findViewById(R.id.pvEt);
         TextView heading = findViewById(R.id.headingTv);
 
         if (locationPos >= 0) {
             location = user.getLocations().get(locationPos);
             name.setText(location.getName());
-            country.setText(location.getCountry());
-            zip.setText(location.getZipString());
-            city.setText(location.getCity());
             con.setText(getResources().getString(R.string.save));
             heading.setText(getResources().getString(R.string.edit_location));
         } else {
@@ -54,13 +51,10 @@ public class AddingLocationActivity extends AppCompatActivity {
         con.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (TextUtils.isEmpty(name.getText()) || TextUtils.isEmpty(country.getText()) || TextUtils.isEmpty(zip.getText()) || TextUtils.isEmpty(city.getText())) {
+                if (TextUtils.isEmpty(name.getText()) || TextUtils.isEmpty(pvId.getText())) {
                     Toast.makeText(AddingLocationActivity.this, getResources().getString(R.string.fill_in_all), Toast.LENGTH_LONG).show();
                 } else {
                     location.setName(name.getText().toString());
-                    location.setCountry(country.getText().toString());
-                    location.setZip(Integer.parseInt(zip.getText().toString()));
-                    location.setCity(city.getText().toString());
                     if (locationPos < 0) {
                         Bundle bundle = new Bundle();
                         bundle.putInt("locationPos", user.getLocations().size() - 1);
@@ -77,7 +71,8 @@ public class AddingLocationActivity extends AppCompatActivity {
         });
     }
 
-    public void readBundle(Bundle bundle) {
+
+    private void readBundle(Bundle bundle) {
         if (bundle != null) {
             this.locationPos = bundle.getInt("locationPos");
         } else {
