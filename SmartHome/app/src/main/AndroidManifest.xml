@@ -12,9 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LocationDetailActivity" />
-        <activity
-            android:name=".adding.AddingProducerActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
+
         <activity
             android:name=".adding.AddingDeviceActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />

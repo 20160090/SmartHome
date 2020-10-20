@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.adding.AddingDeviceActivity;
-import com.example.smarthome.adding.AddingProducerActivity;
 import com.example.smarthome.menu.DevicesRecyclerViewAdapter;
 import com.example.smarthome.menu.ProducerRecyclerViewAdapter;
 import com.example.smarthome.model.Location;

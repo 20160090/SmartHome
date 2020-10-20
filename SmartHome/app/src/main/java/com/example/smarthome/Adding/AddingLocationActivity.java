@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.DeviceProducerActivity;
+import com.example.smarthome.LocationDetailActivity;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
@@ -54,11 +55,14 @@ public class AddingLocationActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(name.getText()) || TextUtils.isEmpty(pvId.getText())) {
                     Toast.makeText(AddingLocationActivity.this, getResources().getString(R.string.fill_in_all), Toast.LENGTH_LONG).show();
                 } else {
+                    //TODO: Location direkt hinzufügen!, dann erst weiter mit Geräten & weiteren PV
+
                     location.setName(name.getText().toString());
                     if (locationPos < 0) {
                         Bundle bundle = new Bundle();
                         bundle.putInt("locationPos", user.getLocations().size() - 1);
-                        Intent intent = new Intent(AddingLocationActivity.this, DeviceProducerActivity.class);
+                        bundle.putBoolean("adding", true);
+                        Intent intent = new Intent(AddingLocationActivity.this, LocationDetailActivity.class);
                         intent.putExtras(bundle);
                         startActivityForResult(intent, LAUNCH_ADDING_ACTIVITY);
                     } else {

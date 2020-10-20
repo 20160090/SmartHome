@@ -11,19 +11,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.smarthome.adding.AddingDeviceActivity;
 import com.example.smarthome.adding.AddingLocationActivity;
-import com.example.smarthome.adding.AddingProducerActivity;
 import com.example.smarthome.menu.DevicesRecyclerViewAdapter;
 import com.example.smarthome.menu.ProducerRecyclerViewAdapter;
 import com.example.smarthome.model.Location;
@@ -40,8 +40,9 @@ public class LocationDetailActivity extends AppCompatActivity {
 
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
-    private EditText pvId;
-    private Button pvCancel, pvAdd;
+    private EditText pvId, deviceName;
+    private Spinner deviceSpinner, companySpinner;
+    private Button btnCancel, btnAdd;
 
 
     @SuppressLint("SetTextI18n")
@@ -133,12 +134,13 @@ public class LocationDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 closeFABMenu();
-                Intent intent = new Intent(LocationDetailActivity.this, AddingDeviceActivity.class);
+                /*Intent intent = new Intent(LocationDetailActivity.this, AddingDeviceActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("locationPos", locationPos);
                 bundle.putInt("devicePos", -1);
                 intent.putExtras(bundle);
-                startActivity(intent);
+                startActivity(intent);*/
+                addDevice();
                 adapterDevices.notifyDataSetChanged();
                 texts();
             }
@@ -228,29 +230,76 @@ public class LocationDetailActivity extends AppCompatActivity {
 
     public void addPv(){
         builder = new AlertDialog.Builder(this);
-        final View pvPopupView = getLayoutInflater().inflate(R.layout.popup, null);
+        final View pvPopupView = getLayoutInflater().inflate(R.layout.popup_pv, null);
         pvId = (EditText)pvPopupView.findViewById(R.id.pvId);
 
-        pvAdd = (Button)pvPopupView.findViewById(R.id.continueBtn);
-        pvCancel = (Button)pvPopupView.findViewById(R.id.backBtn);
+        btnAdd = (Button)pvPopupView.findViewById(R.id.continueBtn);
+        btnCancel = (Button)pvPopupView.findViewById(R.id.backBtn);
 
         builder.setView(pvPopupView);
         dialog = builder.create();
         dialog.show();
 
-        pvAdd.setOnClickListener(new View.OnClickListener() {
+        btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
-        pvCancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
             }
         });
+    }
+    public void addDevice(){
+        builder = new AlertDialog.Builder(this);
+        final View devicePopupView = getLayoutInflater().inflate(R.layout.popup_device, null);
+        pvId = (EditText)devicePopupView.findViewById(R.id.pvId);
+        //TODO: Server get Hersteller + Types
+        //TODO: Hersteller --> Type, WHEN Hersteller changed
 
+        deviceSpinner = (Spinner)devicePopupView.findViewById(R.id.deviceSpinner);
+        companySpinner = (Spinner)devicePopupView.findViewById(R.id.companySpinner);                //TODO: liste von Company/types als drittes methoden aufruf zeugs
+        ArrayAdapter<String> adapterD = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, )
+        ArrayAdapter<String> adapterC = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,);
+        adapterD.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterC.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        deviceSpinner.setAdapter(adapterD);
+        companySpinner.setAdapter(adapterC);
+        companySpinner.getOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        btnAdd = (Button)devicePopupView.findViewById(R.id.continueBtn);
+        btnCancel = (Button)devicePopupView.findViewById(R.id.backBtn);
+
+        builder.setView(devicePopupView);
+        dialog = builder.create();
+        dialog.show();
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: hinzufügen server
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
     }
 
 }

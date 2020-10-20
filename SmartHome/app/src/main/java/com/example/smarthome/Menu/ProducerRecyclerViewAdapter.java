@@ -2,8 +2,6 @@ package com.example.smarthome.menu;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,8 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.smarthome.adding.AddingProducerActivity;
-import com.example.smarthome.model.Device;
 import com.example.smarthome.model.Producer;
 import com.example.smarthome.R;
 
