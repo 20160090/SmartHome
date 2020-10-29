@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/headingTv2"
+        android:id="@+id/headingTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/deviceName"
+        android:id="@+id/pvId"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="10dp"
@@ -35,7 +35,7 @@
         android:textAlignment="textStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headingTv2" />
+        app:layout_constraintTop_toBottomOf="@+id/headingTv" />
 
     <Button
         android:id="@+id/continueBtn"
@@ -51,7 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/backBtn"
-        app:layout_constraintTop_toBottomOf="@+id/pvId" />
+        app:layout_constraintTop_toBottomOf="@id/pvId" />
 
     <Button
         android:id="@+id/backBtn"
@@ -67,5 +67,5 @@
         app:layout_constraintEnd_toStartOf="@+id/continueBtn"
         app:layout_constraintHorizontal_bias="0.098"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pvId" />
+        app:layout_constraintTop_toBottomOf="@id/pvId" />
 </androidx.constraintlayout.widget.ConstraintLayout>

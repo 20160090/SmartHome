@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,8 +16,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.smarthome.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -28,36 +33,56 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        mAuth = FirebaseAuth.getInstance();
+        this.mAuth = FirebaseAuth.getInstance();
 
-        emailEt = findViewById(R.id.email);
-        passwordEt = findViewById(R.id.password);
-        passwordConEt = findViewById(R.id.passwordConfirm);
+        this.emailEt = findViewById(R.id.email);
+        this.passwordEt = findViewById(R.id.password);
+        this.passwordConEt = findViewById(R.id.passwordConfirm);
         Button regBtn = findViewById(R.id.register);
-        progressBar = findViewById(R.id.progressBar);
+        //FloatingActionButton showBtn = findViewById(R.id.showBtn);
+        //FloatingActionButton showBtnCon = findViewById(R.id.showBtnCon);
 
-        regBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                registerUser();
+        this.progressBar = findViewById(R.id.progressBar);
+
+        regBtn.setOnClickListener(view -> registerUser());
+
+
+        /*showBtn.setOnTouchListener((view, motionEvent) -> {
+            if(motionEvent.getAction() == MotionEvent.ACTION_BUTTON_PRESS){
+             passwordEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
             }
-        });
+            else{
+                passwordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
 
+            return false;
+        });
+        showBtnCon.setOnTouchListener((view, motionEvent) -> {
+            if(motionEvent.getAction() == MotionEvent.ACTION_BUTTON_PRESS){
+                passwordEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            }
+            else{
+                passwordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
+
+            return false;
+        });*/
     }
 
     @SuppressLint("ShowToast")
     private void registerUser() {
-        progressBar.setVisibility(View.VISIBLE);
+        this.progressBar.setVisibility(View.VISIBLE);
 
         final String email, password, passwordC;
-        email = emailEt.getText().toString();
-        password = passwordEt.getText().toString();
-        passwordC = passwordConEt.getText().toString();
+        email = this.emailEt.getText().toString();
+        password = this.passwordEt.getText().toString();
+        passwordC = this.passwordConEt.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(RegistrationActivity.this, "Please enter email...", Toast.LENGTH_LONG).show();
@@ -74,40 +99,35 @@ public class RegistrationActivity extends AppCompatActivity {
 
         if (TextUtils.equals(password, passwordC)) {
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Objects.requireNonNull(mAuth.getCurrentUser()).sendEmailVerification()
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Toast.makeText(RegistrationActivity.this, "Registration successful! Please verify your email", Toast.LENGTH_LONG).show();
+            this.mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
 
-                                                    progressBar.setVisibility(View.GONE);
+                            Objects.requireNonNull(this.mAuth.getCurrentUser()).sendEmailVerification()
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(RegistrationActivity.this, "Registration successful! Please verify your email", Toast.LENGTH_LONG).show();
 
-                                                    Intent Main = new Intent(RegistrationActivity.this, LoginActivity.class);
-                                                    finish();
-                                                    startActivity(Main);
-                                                }
-                                            }
-                                        });
-                            } else {
-                                switch(((FirebaseAuthException) Objects.requireNonNull(task.getException())).getErrorCode()){
-                                    case "ERROR_INVALID_EMAIL": Toast.makeText(RegistrationActivity.this, "Please enter a correct email address", Toast.LENGTH_LONG).show(); break;
-                                    case "ERROR_WEAK_PASSWORD": Toast.makeText(RegistrationActivity.this, "Your password should have at least 6 chars", Toast.LENGTH_LONG).show(); break;
-                                    case "ERROR_EMAIL_ALREADY_IN_USE": Toast.makeText(RegistrationActivity.this, "This email address is already in", Toast.LENGTH_LONG).show(); break;
-                                    //TODO: weak password!!!!!!!!!!!!!!!!!
-                                    default: Toast.makeText(RegistrationActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
-                                }
-                                progressBar.setVisibility(View.GONE);
+                                            this.progressBar.setVisibility(View.GONE);
+                                            User.getInstance().setFirebaseUser(this.mAuth.getCurrentUser());
+
+                                            Intent Main = new Intent(RegistrationActivity.this, LoginActivity.class);
+                                            finish();
+                                            startActivity(Main);
+                                        }
+                                    });
+                        } else {
+                            switch(((FirebaseAuthException) Objects.requireNonNull(task.getException())).getErrorCode()){
+                                case "ERROR_INVALID_EMAIL": Toast.makeText(RegistrationActivity.this, "Please enter a correct email address", Toast.LENGTH_LONG).show(); break;
+                                case "ERROR_WEAK_PASSWORD": Toast.makeText(RegistrationActivity.this, "Your password should have at least 6 chars", Toast.LENGTH_LONG).show(); break;
+                                case "ERROR_EMAIL_ALREADY_IN_USE": Toast.makeText(RegistrationActivity.this, "This email address is already in", Toast.LENGTH_LONG).show(); break;
+                                default: Toast.makeText(RegistrationActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                             }
+                            this.progressBar.setVisibility(View.GONE);
                         }
                     });
         } else {
-            Toast.makeText(RegistrationActivity.this, "Ka wos ma do schreim soid... Vatippt??", Toast.LENGTH_LONG).show();
+            Toast.makeText(RegistrationActivity.this, "Passwörter stimmen nicht überein", Toast.LENGTH_LONG).show();
         }
 
 

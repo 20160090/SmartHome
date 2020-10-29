@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.smarthome.adding.AddingLocationActivity;
+import com.example.smarthome.model.Location;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -43,7 +44,6 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton add;
     private User user;
     private TextView noLocation;
-    private ScrollView sv;
 
 
     public HomeFragment() {
@@ -62,9 +62,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // TODO: Rename and change types of parameters
-        user = User.getInstance();
-
-
+        this.user = User.getInstance();
     }
 
     @Override
@@ -72,8 +70,8 @@ public class HomeFragment extends Fragment {
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        add = view.findViewById(R.id.addFAB);
-        noLocation = view.findViewById(R.id.noLocation);
+        this.add = view.findViewById(R.id.addFAB);
+        this.noLocation = view.findViewById(R.id.noLocation);
 
         //TODO: bessere Lösung...
         MenuActivity menuActivity = (MenuActivity) getActivity();
@@ -92,15 +90,12 @@ public class HomeFragment extends Fragment {
         });
 
 
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), AddingLocationActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt("locationPos", -1);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
+        this.add.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), AddingLocationActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt("locationPos", -1);
+            intent.putExtras(bundle);
+            startActivity(intent);
         });
 
 
@@ -140,8 +135,9 @@ public class HomeFragment extends Fragment {
         transaction1.commit();
 
         for (int i = 0; i < user.getLocations().size(); i++) {
+            Location loc = user.getLocations().get(i);
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            Fragment location = LocationFragment.newInstance(i);
+            Fragment location = LocationFragment.newInstance(loc.getId());
 
 
             switch (i) {

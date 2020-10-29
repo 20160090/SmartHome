@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,10 +9,6 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     tools:context=".RegistrationActivity">
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="137dp" />
 
     <EditText
         android:id="@+id/email"
@@ -23,57 +20,91 @@
         android:inputType="textEmailAddress"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:textSize="18sp" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp" />
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginTop="8dp"
         android:autofillHints=""
         android:background="@drawable/rounded_edittext"
         android:hint="@string/password"
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:textSize="18sp" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="5dp" />
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/showBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email" />
 
     <EditText
         android:id="@+id/passwordConfirm"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginTop="8dp"
         android:autofillHints=""
         android:background="@drawable/rounded_edittext"
         android:hint="@string/passwort_confirm"
         android:inputType="textPassword"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/showBtnCon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/showBtn"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_weather"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/passwordConfirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/showBtnCon"
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_weather"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/register"
         android:layout_width="match_parent"
         android:layout_height="45dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/rounded_log_sign"
         android:text="@string/register"
         android:textColor="#FFFFFF"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/passwordConfirm"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

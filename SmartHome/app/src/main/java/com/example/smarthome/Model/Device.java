@@ -4,24 +4,28 @@ import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Comparator;
 
 public class Device implements Comparable<Device> {
 
-    public static final String RUNNING = "läuft";
-    public static final String NOT_RUNNING = "Sollte nicht eingeschalten werden";
-    public static final String SHOULD_BE_RUNNING = "Sollte eingeschalten werden";
-    public static final String SHOULD_NOT_BE_RUNNING = "Sollte nicht eingeschalten sein";
+    public enum State {
+        RUNNING,
+        NOT_RUNNING,
+        SHOULD_BE_RUNNING,
+        SHOULD_NOT_BE_RUNNING
+    }
 
 
-    private String name, type, manufacturer, state;
+    private String id, name, serialNumber, company, possibleDeviceType;
+    private State state;
     private double averageConsumption;
+
+
     @Override
     public int compareTo(Device device) {
         int sol = 0;
         switch (this.state) {
             case SHOULD_BE_RUNNING:
-                if (!device.getState().equals(SHOULD_BE_RUNNING)) {
+                if (!device.getState().equals(State.SHOULD_BE_RUNNING)) {
                     sol = 1;
                     break;
                 }
@@ -46,7 +50,7 @@ public class Device implements Comparable<Device> {
                         break;
                 }
             case NOT_RUNNING:
-                if (!device.getState().equals(NOT_RUNNING)) {
+                if (!device.getState().equals(State.NOT_RUNNING)) {
                     sol = 1;
                     break;
                 }
@@ -55,34 +59,44 @@ public class Device implements Comparable<Device> {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({RUNNING, NOT_RUNNING, SHOULD_BE_RUNNING, SHOULD_NOT_BE_RUNNING})
     @interface DeviceState {
     }
 
 
     public Device() {
-        this.name = "unknown";
-        this.type = "unknown";
-        this.manufacturer = "unknown";
-        this.state = NOT_RUNNING;
+        this.id = "";
+        this.name = "";
+        this.serialNumber = "";
+        this.possibleDeviceType = "";
         this.averageConsumption = 0.0;
+        this.state = State.NOT_RUNNING;
     }
 
     public Device(Device device) {
-        this(device.getName(), device.getType(), device.getManufacturer(), device.getState(), device.getAverageConsumption());
+        this(device.getId(), device.getName(), device.getPossibleDeviceType(), device.getState(), device.getSerialNumber(), device.getCompany(), device.getAverageConsumption());
     }
 
-    public Device(String name, String type, String manufacturer, String state, double averageConsumption) {
+    public Device(String id, String name, String possibleDeviceType, State state, String serialNumber, String company, Double averageConsumption) {
+        this.id = id;
         this.name = name;
-        this.type = type;
+        this.serialNumber = serialNumber;
+        this.possibleDeviceType = possibleDeviceType;
         this.state = state;
-        this.manufacturer = manufacturer;
+        this.company = company;
         this.averageConsumption = averageConsumption;
     }
 
-    public Device(String name, String type, String manufacturer) {
-        this(name, type, manufacturer, NOT_RUNNING, 0.0);
+    public Device(String id, String name, String possibleDeviceType, String state, String serialNumber, String company, Double averageConsumption) {
+
+        this.id = id;
+        this.name = name;
+        this.serialNumber = serialNumber;
+        this.possibleDeviceType = possibleDeviceType;
+        this.state = switchState(state);
+        this.company = company;
+        this.averageConsumption = averageConsumption;
     }
+
 
     public String getName() {
         return this.name;
@@ -92,40 +106,68 @@ public class Device implements Comparable<Device> {
         this.name = name;
     }
 
-    public String getType() {
-        return this.type;
+    public String getId() {
+        return this.id;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPossibleDeviceType() {
+        return possibleDeviceType;
+    }
+
+    public void setPossibleDeviceType(String possibleDeviceType) {
+        this.possibleDeviceType = possibleDeviceType;
+    }
+
+    public String getSerialNumber() {
+        return this.serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     @DeviceState
-    public String getState() {
+    public State getState() {
         return state;
     }
 
     @DeviceState
-    public void setState(String state) {
+    public void setState(State state) {
         this.state = state;
     }
 
+    public String getCompany() {
+        return this.company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
     public double getAverageConsumption() {
-        return averageConsumption;
+        return this.averageConsumption;
     }
 
     public void setAverageConsumption(double averageConsumption) {
         this.averageConsumption = averageConsumption;
     }
 
-    public String getManufacturer() {
-        return this.manufacturer;
+    public State switchState(String string) {
+        switch (string) {
+            case "RUNNING":
+                return State.RUNNING;
+            case "NOT_RUNNING":
+                return State.NOT_RUNNING;
+            case "SHOULD_BE_RUNNING":
+                return State.SHOULD_BE_RUNNING;
+            case "SHOULD_NOT_BE_RUNNING":
+                return State.SHOULD_NOT_BE_RUNNING;
+        }
+        return null;
     }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-
 }
 

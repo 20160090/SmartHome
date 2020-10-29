@@ -42,8 +42,8 @@ public class AddingDeviceActivity extends AppCompatActivity {
         if (devicePos >= 0) {
             device = this.location.getDevices().get(devicePos);
             name.setText(device.getName());
-            type.setText(device.getType());
-            manufacturer.setText(device.getManufacturer());
+//            type.setText(device.getType());
+  //          manufacturer.setText(device.getManufacturer());
             continueBtn.setText(getResources().getString(R.string.save));
         }
 
@@ -54,12 +54,12 @@ public class AddingDeviceActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.fill_in_all), Toast.LENGTH_LONG).show();
                 } else {
                     if (device == null) {
-                        device = new Device(name.getText().toString(), type.getText().toString(), manufacturer.getText().toString());
+     //                   device = new Device(name.getText().toString(), type.getText().toString(), manufacturer.getText().toString());
                         location.addDevice(device);
                     } else {
                         device.setName(name.getText().toString());
-                        device.setType(type.getText().toString());
-                        device.setManufacturer(manufacturer.getText().toString());
+       //                 device.setType(type.getText().toString());
+         //               device.setManufacturer(manufacturer.getText().toString());
                     }
 
                     finish();

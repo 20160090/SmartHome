@@ -1,36 +1,26 @@
 package com.example.smarthome.model;
 
 public class Producer {
-    private String name, manufacturer, type;
+    private String type;
+    private String id;
     private double currentlyProduced;
 
-    public Producer(){
-        this("","","",0.0);
-    }
-    public Producer(String name, String manufacturer, String type){
-        this(name,manufacturer,type,0.0);
-    }
-    public Producer(String name, String manufacturer, String type, double currentlyProduced){
-        this.name=name;
-        this.manufacturer=manufacturer;
-        this.type=type;
-        this.currentlyProduced=currentlyProduced;
+    public Producer() {
+        this("", "", 0.0);
     }
 
-    public String getName() {
-        return this.name;
+    public Producer(String id, String type, double currentlyProduced) {
+        this.id = id;
+        this.type = type;
+        this.currentlyProduced = currentlyProduced;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getId() {
+        return this.id;
     }
 
-    public String getManufacturer() {
-        return this.manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getType() {

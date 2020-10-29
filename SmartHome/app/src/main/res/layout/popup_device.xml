@@ -46,7 +46,7 @@
         android:autofillHints=""
         android:background="@drawable/rounded_edittext"
         android:ems="10"
-        android:hint="@string/name"
+        android:hint="@string/benutzerspezifischer_name"
         android:inputType="textPersonName"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -54,6 +54,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headingTv" />
+
+    <EditText
+        android:id="@+id/deviceId"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
+        android:autofillHints=""
+        android:background="@drawable/rounded_edittext"
+        android:ems="10"
+        android:hint="@string/seriennummer"
+        android:inputType="textPersonName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textAlignment="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceName" />
 
     <Button
         android:id="@+id/continueBtn"
@@ -94,5 +113,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deviceName" />
+        app:layout_constraintTop_toBottomOf="@+id/deviceId" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,14 +7,14 @@ import java.time.LocalTime;
 import java.util.Date;
 
 public class Weather {
-    private Timestamp date;
+    private LocalDateTime date;
     private String description;
     private double temp;
     private LocalTime sunset;
     private LocalTime sunrise;
     public Weather(){
     }
-    public Weather(Timestamp date, String description, double temp, LocalTime sunrise, LocalTime sunset){
+    public Weather(LocalDateTime date, String description, double temp, LocalTime sunrise, LocalTime sunset){
         this.date=date;
         this.description=description;
         this.temp=temp;
@@ -26,11 +26,11 @@ public class Weather {
 
     }
 
-    public Timestamp getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

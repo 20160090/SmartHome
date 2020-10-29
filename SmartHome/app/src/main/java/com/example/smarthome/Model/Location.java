@@ -2,6 +2,10 @@ package com.example.smarthome.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.example.smarthome.model.Device.State.RUNNING;
 
 public class Location {
     private ArrayList<Device> devices;
@@ -11,6 +15,8 @@ public class Location {
     private String city;
     private String country;
     private Weather weather;
+    private Map<String, Weather> forecast;
+    private String id;
 
     public Location() {
         this.devices = new ArrayList<>();
@@ -20,19 +26,24 @@ public class Location {
         this.city="unknown";
         this.country = "unknown";
         this.weather = new Weather();
+        this.forecast = new HashMap<String, Weather>();
+        this.id="";
     }
 
-    public Location(String name, int zip, String city, String country) {
+    public Location(String id, String name, int zip, String city, String country) {
         this.zip = zip;
         this.city = city;
         this.country = country;
         this.name = name;
         this.devices = new ArrayList<>();
         this.producers = new ArrayList<>();
+        this.weather = new Weather();
+        this.forecast = new HashMap<String, Weather>();
+        this.id=id;
     }
 
-    public Location(String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers) {
-        this(name, zip, city, country);
+    public Location(String id, String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers, Weather weather, HashMap<String, Weather> forecast) {
+        this(id, name, zip, city, country);
         this.setDevices(devices);
         this.setProducers(producers);
     }
@@ -41,7 +52,6 @@ public class Location {
     public void addDevice(Device device) {
         this.devices.add(device);
         Collections.sort(devices);
-        //Server??
     }
 
     public void addProducer(Producer producer) {
@@ -51,13 +61,14 @@ public class Location {
     public int getRunningNum() {
         int count = 0;
         for (int i = 0; i < devices.size(); i++) {
-            if (devices.get(i).getState().equals(Device.RUNNING)) {
+            if (devices.get(i).getState().equals(RUNNING)) {
                 count++;
             }
         }
         return count;
     }
 
+    //TODO: braucht man vlt nicht
     public double getCurrentEnergy() {
         double energy = 0;
         for (int i = 0; i < producers.size(); i++) {
@@ -120,4 +131,31 @@ public class Location {
         return ""+this.zip+"";
     }
 
+    public Weather getWeather() {
+        return this.weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
+    }
+
+    public Map<String, Weather> getForecast() {
+        return this.forecast;
+    }
+
+    public void setForecast(Map<String, Weather> forecast) {
+        this.forecast = forecast;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String locationInfo(){
+        return this.name +" (ID: "+this.id+") \n"+this.getZipString()+" "+this.city+" \n"+this.country;
+    }
 }

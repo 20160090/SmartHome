@@ -47,6 +47,14 @@
     </string>
     <string name="photovoltaikid">PhotovoltaikID</string>
     <string name="add_photovoltaik">Photovoltaik hinzufügen</string>
+    <string name="benutzerspezifischer_name">Benutzerspezifischer Name</string>
+    <string name="seriennummer">Seriennummer</string>
+    <string name="title_activity_edit_location">EditLocationActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
 
 
 </resources>
