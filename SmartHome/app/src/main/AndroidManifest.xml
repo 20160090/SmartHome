@@ -24,12 +24,9 @@
 
         <activity android:name=".LocationDetailActivity" />
         <activity
-            android:name=".adding.AddingDeviceActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity
             android:name=".adding.AddingLocationActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity android:name=".DeviceProducerActivity" />
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

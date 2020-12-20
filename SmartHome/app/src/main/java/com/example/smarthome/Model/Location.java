@@ -8,8 +8,8 @@ import java.util.Map;
 import static com.example.smarthome.model.Device.State.RUNNING;
 
 public class Location {
-    private ArrayList<Device> devices;
-    private ArrayList<Producer> producers;
+    private final ArrayList<Device> devices;
+    private final ArrayList<Producer> producers;
     private String name;
     private int zip;
     private String city;
@@ -60,15 +60,14 @@ public class Location {
 
     public int getRunningNum() {
         int count = 0;
-        for (int i = 0; i < devices.size(); i++) {
-            if (devices.get(i).getState().equals(RUNNING)) {
+        for (int i = 0; i < this.devices.size(); i++) {
+            if (this.devices.get(i).getState().equals(RUNNING)) {
                 count++;
             }
         }
         return count;
     }
 
-    //TODO: braucht man vlt nicht
     public double getCurrentEnergy() {
         double energy = 0;
         for (int i = 0; i < producers.size(); i++) {

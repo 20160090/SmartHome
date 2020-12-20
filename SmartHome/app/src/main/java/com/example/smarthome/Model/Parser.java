@@ -4,8 +4,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.smarthome.R;
-import com.example.smarthome.model.Device.State;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
@@ -25,11 +23,10 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import static com.example.smarthome.model.Device.State.*;
 
 public class Parser {
-    private User user;
-    private FirebaseFunctions mFunction;
+    private final User user;
+    private final FirebaseFunctions mFunction;
 
     public Parser() {
         this.user = User.getInstance();
@@ -57,7 +54,6 @@ public class Parser {
                         e.printStackTrace();
                     }
                 });
-
     }
 
     public void callGenerator(Location location) {
@@ -74,12 +70,13 @@ public class Parser {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             JSONObject act = obj.getJSONObject("Generator");
-                            location.addProducer(this.parseProdcer(act));
+                            location.addProducer(this.parseProducer(act));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 });
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -114,13 +111,11 @@ public class Parser {
                         e.printStackTrace();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    e.printStackTrace();
-                });
+                .addOnFailureListener(Throwable::printStackTrace);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public boolean callGetLocations(Function<HttpsCallableResult, HttpsCallableResult> callBack) {
+    public void callGetLocations(Function<HttpsCallableResult, HttpsCallableResult> callBack) {
         Map<String, String> data = new HashMap<>();
         data.put("email", User.getInstance().getFirebaseUser().getEmail());
         this.mFunction.getHttpsCallable("getLocations")
@@ -139,7 +134,6 @@ public class Parser {
                 .addOnCompleteListener(task -> {
                     callBack.apply(task.getResult().getResult());
                 });
-        return true;
 
     }
 
@@ -162,12 +156,28 @@ public class Parser {
         return location;
     }
 
-    public Producer parseProdcer(JSONObject object) {
+    public Producer parseProducer(JSONObject object) {
         Producer producer = new Producer();
         try {
             producer.setId(object.getString("pvID"));
             producer.setType(object.getString("generatorType"));
-            //TODO: currentryProduced
+            Map<String, String> data =new HashMap<>();
+            data.put("pvID",producer.getId());
+            this.mFunction
+                    .getHttpsCallable("getPVData")
+                    .call(data)
+                    .addOnSuccessListener(result -> {
+                        try {
+                            JSONObject object1 = new JSONObject(result.getData().toString());
+                            JSONArray array = object1.getJSONArray("PVData");
+                            JSONObject act = array.getJSONObject(3);
+                            double value = act.getDouble("value");
+
+                            producer.setCurrentlyProduced(value);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -183,8 +193,21 @@ public class Parser {
             device.setState(device.switchState( object.getString("consumerState").toUpperCase()));
             device.setCompany(object.getString("companyName"));
             device.setPossibleDeviceType(object.getString("consumerType"));
-            device.setAverageConsumption(object.getDouble("averageConsumption"));
-            device.setAverageConsumption(20.0);
+            device.setAverageConsumption(object.getDouble("consumerAverageConsumption"));
+
+            Map<String, String> data = new HashMap<>();
+            data.put("consumerType",device.getPossibleDeviceType());
+
+            mFunction.getHttpsCallable("getConsumerData")
+                    .call(data)
+                    .addOnSuccessListener(result -> {
+                        try {
+                            JSONObject object1 = new JSONObject(result.getData().toString());
+                            device.setConsumption(object.getDouble("consumption"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    });
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -218,9 +241,6 @@ public class Parser {
             sdf.setTimeZone(TimeZone.getTimeZone("MEZ"));
             weather.setSunset(date.toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
 
-            //unixTime = object.getLong("sunrise");
-            //instant = Instant.ofEpochSecond(unixTime);
-            //weather.setSunrise(LocalTime.from(instant));
             unix_Secons = object.getLong("sunrise");
             date = new Date(unix_Secons * 1000L);
             weather.setSunrise(date.toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
@@ -232,7 +252,6 @@ public class Parser {
         }
         return weather;
     }
-
 
     public void callFunctionAddPV(String locationID, String pvID) {
         Map<String, String> data = new HashMap<>();
@@ -289,9 +308,7 @@ public class Parser {
                                 e.printStackTrace();
                             }
                         })
-                        .addOnFailureListener(e -> {
-                            e.printStackTrace();
-                        });
+                        .addOnFailureListener(Throwable::printStackTrace);
                 this.user.getCompanies().add(company);
             }
         } catch (JSONException e) {

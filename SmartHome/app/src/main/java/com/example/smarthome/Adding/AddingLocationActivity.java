@@ -4,11 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.loader.app.LoaderManager;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +20,6 @@ import android.widget.Toast;
 import com.example.smarthome.LocationDetailActivity;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
-import com.example.smarthome.model.Producer;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -54,11 +50,10 @@ public class AddingLocationActivity extends AppCompatActivity {
         readBundle(getIntent().getExtras());
 
         Button con = findViewById(R.id.continueBtn);
+        TextView heading = findViewById(R.id.headingTv);
         this.name = findViewById(R.id.nameEt);
         this.pvId = findViewById(R.id.pvEt);
-        TextView heading = findViewById(R.id.headingTv);
         this.progressBar = findViewById(R.id.progressBar);
-        this.name.setText("grr");
         this.pvId.setText("6dd05177-193f-4580-97bd-3331e3abe530");
 
         if (this.locationPos >= 0) {
@@ -71,7 +66,7 @@ public class AddingLocationActivity extends AppCompatActivity {
         }
 
         con.setOnClickListener(view -> {
-            if (TextUtils.isEmpty(this.name.getText()) || TextUtils.isEmpty(this.pvId.getText())) {
+            if (TextUtils.isEmpty(this.pvId.getText())) {
                 Toast.makeText(AddingLocationActivity.this, getResources().getString(R.string.fill_in_all), Toast.LENGTH_LONG).show();
             } else {
                 con.setClickable(false);
@@ -81,7 +76,6 @@ public class AddingLocationActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
@@ -96,14 +90,12 @@ public class AddingLocationActivity extends AppCompatActivity {
         super.onBackPressed();
         if (this.locationPos < 0) {
             this.user.getLocations().remove(user.getLocations().size() - 1);
-
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == LAUNCH_ADDING_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
                 finish();
@@ -111,11 +103,10 @@ public class AddingLocationActivity extends AppCompatActivity {
         }
     }
 
-
     public void saveUserLocation(JSONObject object) {
         this.location = this.parser.parseLocation(object);
         if (!this.name.getText().toString().isEmpty()) {
-            location.setName(this.name.getText().toString());
+            this.location.setName(this.name.getText().toString());
         }
         this.user.getLocations().add(this.location);
     }
@@ -151,10 +142,10 @@ public class AddingLocationActivity extends AppCompatActivity {
         this.mFunction
                 .getHttpsCallable("addLocation")
                 .call(data)
-                .addOnSuccessListener(httpsCallableResult -> {
+                .addOnSuccessListener(result -> {
                     JSONObject object = null;
                     try {
-                        object = new JSONObject(httpsCallableResult.getData().toString());
+                        object = new JSONObject(result.getData().toString());
                         this.location.setId(object.getString("locationID"));
 
                         this.parser.callGetWeather(this.location);
@@ -176,12 +167,11 @@ public class AddingLocationActivity extends AppCompatActivity {
                 .getHttpsCallable("addPV")
                 .call(data)
                 .addOnSuccessListener(result -> {
-
-                    parser.callGenerator(location);
-                    progressBar.setVisibility(View.GONE);
-                    if (locationPos < 0) {
+                    this.parser.callGenerator(this.location);
+                    this.progressBar.setVisibility(View.GONE);
+                    if (this.locationPos < 0) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("locationID", location.getId());
+                        bundle.putString("locationID", this.location.getId());
                         bundle.putBoolean("adding", true);
                         Intent intent = new Intent(AddingLocationActivity.this, LocationDetailActivity.class);
                         intent.putExtras(bundle);
@@ -193,6 +183,5 @@ public class AddingLocationActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-
     }
 }

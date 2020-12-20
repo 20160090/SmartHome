@@ -1,15 +1,18 @@
 package com.example.smarthome.model;
 
+import android.animation.Keyframe;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.autofill.Dataset;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
 import com.example.smarthome.LocationDetailActivity;
 import com.example.smarthome.adding.AddingLocationActivity;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -17,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpCookie;
 import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -32,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.TimeZone;
 
 public class User {
@@ -39,10 +44,12 @@ public class User {
     private FirebaseUser firebaseUser;
     private ArrayList<Location> locations;
     private ArrayList<Company> companies;
+    private Observable loadingData;
 
     public User() {
         this.locations = new ArrayList<>();
         this.companies = new ArrayList<>();
+        loadingData = new Observable();
     }
 
     public static User getInstance() {
@@ -72,6 +79,22 @@ public class User {
         this.companies = companies;
     }
 
+    public Observable getLoadingData() {
+        return loadingData;
+    }
+
+    public void setLoadingData(Observable loadingData) {
+        this.loadingData = loadingData;
+    }
+
+    public void loadingAll(){
+       TaskRunner taskRunner = new TaskRunner();
+        taskRunner.executeAsync(new LoadingAll(firebaseUser.getEmail()), (data) ->{
+
+            locations=data;
+            loadingData.notify();
+        });
+    }
 }
 
 

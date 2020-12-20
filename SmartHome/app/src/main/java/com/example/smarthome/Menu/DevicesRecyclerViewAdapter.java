@@ -4,12 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,11 +14,14 @@ import android.widget.TextView;
 
 
 import com.example.smarthome.LocationDetailActivity;
-import com.example.smarthome.adding.AddingDeviceActivity;
 import com.example.smarthome.model.Device;
 import com.example.smarthome.R;
 import com.example.smarthome.model.User;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.functions.FirebaseFunctions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,7 @@ import static com.example.smarthome.model.Device.State.SHOULD_NOT_BE_RUNNING;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
-    private User user = User.getInstance();
+    private final User user = User.getInstance();
     private final List<Device> mValues;
     private final String locationID;
     private final Context context;
@@ -58,78 +57,64 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mItem = mValues.get(position);
-        holder.mInfo.setText(mValues.get(position).getName() + "\n" + mValues.get(position).getAverageConsumption());
-
+        holder.mItem = this.mValues.get(position);
+        holder.mInfo.setText(this.mValues.get(position).getName() + "\n" + this.mValues.get(position).getAverageConsumption());
+        holder.mConsumption.setText("Momentan verbrauch: "+""+this.mValues.get(position).getConsumption()+"");
         holder.itemView.setOnClickListener(view -> {
+
             PopupMenu popupMenu = new PopupMenu(view.getContext(), holder.mInfo);
             popupMenu.inflate(R.menu.device_menu);
             popupMenu.setOnMenuItemClickListener(menuItem -> {
-                Device device = new Device(mValues.get(position));
+                Device device = new Device(this.mValues.get(position));
                 FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
                 Map<String, String> data = new HashMap<>();
-                data.put("email",user.getFirebaseUser().getEmail());
-                data.put("locationID",locationID);
+                data.put("email", this.user.getFirebaseUser().getEmail());
+                data.put("locationID", this.locationID);
                 data.put("consumerID", device.getId());
+                data.put("pvID",this.user.getLocations().stream().filter(l -> l.getId().equals(this.locationID)).findFirst().get().getProducers().get(0).getId());
 
                 switch (menuItem.getItemId()) {
                     case R.id.run:
-                        switch (device.getState()) {
-                            case NOT_RUNNING:
-                                device.setState(SHOULD_NOT_BE_RUNNING);
-                                data.put("consumerState","SHOULD_NOT_BE_RUNNING");
-                                break;
-                            case SHOULD_BE_RUNNING:
-                                device.setState(RUNNING);
-                                data.put("consumerState","RUNNING");
-                                break;
-                        }
+                       data.put("modus", "start");
                         mFunctions
                                 .getHttpsCallable("updateState")
                                 .call(data)
                                 .addOnSuccessListener(result -> {
-                                    mValues.set(position, device);
+                                    this.mValues.set(position, device);
                                     notifyItemChanged(position);
-                                });
+                                })
+                        .addOnFailureListener(e -> {
+                            e.printStackTrace();
+                        });
                         break;
                     case R.id.stop:
-                        switch (device.getState()) {
-                            case RUNNING:
-                                device.setState(SHOULD_BE_RUNNING);
-                                data.put("consumerState","SHOULD_BE_RUNNING");
-                                break;
-                            case SHOULD_NOT_BE_RUNNING:
-                                device.setState(NOT_RUNNING);
-                                data.put("consumerState","NOT_RUNNING");
-                                break;
-                        }
+                        data.put("modus", "stop");
                         mFunctions
                                 .getHttpsCallable("updateState")
                                 .call(data)
                                 .addOnSuccessListener(result -> {
-                                    mValues.set(position, device);
+                                    device.switchState(result.getData().toString());
+                                    this.mValues.set(position, device);
                                     notifyItemChanged(position);
                                 });
                         break;
                     case R.id.delete:
-
                         data.clear();
-                        data.put("email",user.getFirebaseUser().getEmail());
-                        data.put("locationID",locationID);
-                        data.put("consumerID",device.getId());
+                        data.put("email", this.user.getFirebaseUser().getEmail());
+                        data.put("locationID", this.locationID);
+                        data.put("consumerID", device.getId());
                         mFunctions
                                 .getHttpsCallable("deleteConsumer")
                                 .call(data)
                                 .addOnSuccessListener(result -> {
-
-                                    mValues.remove(position);
+                                    this.mValues.remove(position);
                                     notifyItemRemoved(position);
                                     notifyDataSetChanged();
                                 });
                         break;
                     case R.id.edit:
-                        ((LocationDetailActivity)context).editConsumer(device);
-                        mValues.set(position, device);
+                        ((LocationDetailActivity) context).editConsumer(device);
+                        this.mValues.set(position, device);
                         notifyItemChanged(position);
                         break;
                     default:
@@ -141,7 +126,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             popupMenu.show();
         });
 
-        switch (mValues.get(position).getState()) {
+        switch (this.mValues.get(position).getState()) {
             case RUNNING:
                 holder.mImg.setBackgroundResource(R.mipmap.pfeilgruen);
                 break;
@@ -159,13 +144,12 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return this.mValues.size();
     }
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mInfo;
+        public final TextView mInfo, mConsumption;
         public Device mItem;
         public final ImageView mImg;
 
@@ -173,9 +157,9 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             super(view);
             mView = view;
             mInfo = view.findViewById(R.id.info);
+            mConsumption = view.findViewById(R.id.consumption);
             mImg = view.findViewById(R.id.imageView);
         }
-
 
         @NonNull
         @Override

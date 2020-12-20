@@ -40,11 +40,8 @@ public class StatisticFragment extends Fragment {
 
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_statistic, container, false);
         BarChart chart = view.findViewById(R.id.chart);
 
@@ -57,6 +54,7 @@ public class StatisticFragment extends Fragment {
         chart.invalidate();
         return view;
     }
+
     private ArrayList getDataSet() {
         ArrayList dataSets = null;
 

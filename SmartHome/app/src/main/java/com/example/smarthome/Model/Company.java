@@ -3,8 +3,8 @@ package com.example.smarthome.model;
 import java.util.ArrayList;
 
 public class Company {
-    String id, name;
-    ArrayList<PossibleDeviceType> devices;
+    private String id, name;
+    private ArrayList<PossibleDeviceType> devices;
 
     public Company(){
         this.id="";

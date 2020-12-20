@@ -1,8 +1,8 @@
 package com.example.smarthome.model;
 
 public class PossibleDeviceType {
-    String id, type;
-    double averageConsumption;
+    private String id, type;
+    private double averageConsumption;
 
     public PossibleDeviceType(){
         this.id="";
@@ -16,7 +16,7 @@ public class PossibleDeviceType {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(String id) {
@@ -24,7 +24,7 @@ public class PossibleDeviceType {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(String type) {
@@ -32,7 +32,7 @@ public class PossibleDeviceType {
     }
 
     public double getAverageConsumption() {
-        return averageConsumption;
+        return this.averageConsumption;
     }
 
     public void setAverageConsumption(double averageConsumption) {

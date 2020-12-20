@@ -1,7 +1,5 @@
 package com.example.smarthome.model;
 
-import androidx.annotation.StringDef;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -17,7 +15,7 @@ public class Device implements Comparable<Device> {
 
     private String id, name, serialNumber, company, possibleDeviceType;
     private State state;
-    private double averageConsumption;
+    private double averageConsumption, consumption;
 
 
     @Override
@@ -58,10 +56,6 @@ public class Device implements Comparable<Device> {
         return sol;
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @interface DeviceState {
-    }
-
 
     public Device() {
         this.id = "";
@@ -70,6 +64,7 @@ public class Device implements Comparable<Device> {
         this.possibleDeviceType = "";
         this.averageConsumption = 0.0;
         this.state = State.NOT_RUNNING;
+        this.consumption = 0.0;
     }
 
     public Device(Device device) {
@@ -130,12 +125,10 @@ public class Device implements Comparable<Device> {
         this.serialNumber = serialNumber;
     }
 
-    @DeviceState
     public State getState() {
-        return state;
+        return this.state;
     }
 
-    @DeviceState
     public void setState(State state) {
         this.state = state;
     }
@@ -168,6 +161,14 @@ public class Device implements Comparable<Device> {
                 return State.SHOULD_NOT_BE_RUNNING;
         }
         return null;
+    }
+
+    public double getConsumption() {
+        return this.consumption;
+    }
+
+    public void setConsumption(double consumption) {
+        this.consumption = consumption;
     }
 }
 

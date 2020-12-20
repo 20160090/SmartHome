@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebHistoryItem;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -27,17 +26,11 @@ import com.example.smarthome.R;
 import com.example.smarthome.model.Weather;
 import com.github.pwittchen.weathericonview.WeatherIconView;
 
-import org.w3c.dom.Text;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LocationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LocationFragment extends Fragment {
 
     private Location location;
@@ -72,20 +65,16 @@ public class LocationFragment extends Fragment {
         readBundle(getArguments());
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_location, container, false);
         view.setOnClickListener(view1 -> {
             Intent intent = new Intent(getActivity(), LocationDetailActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("locationID", locationID);
+            bundle.putString("locationID", this.locationID);
             intent.putExtras(bundle);
-            startActivityForResult(intent, DELETED);
+            startActivityForResult(intent, this.DELETED);
             homeFragmentLocation();
         });
 
@@ -102,47 +91,67 @@ public class LocationFragment extends Fragment {
         descriptionTv.setText(weather.getDescription());
         sunsetTv.setText(weather.getSunset().truncatedTo(ChronoUnit.SECONDS).format(formatter));
         sunriseTv.setText(weather.getSunrise().truncatedTo(ChronoUnit.SECONDS).format(formatter));
-        tempTv.setText(""+weather.getTemp()+" °C");
+        tempTv.setText("" + weather.getTemp() + " °C");
 
-        WeatherIconView descriptionIcon, sunriseIcon, sunsetIcon,tempIcon ;
-        descriptionIcon =  view.findViewById(R.id.description);
+        WeatherIconView descriptionIcon, sunriseIcon, sunsetIcon, tempIcon;
+        descriptionIcon = view.findViewById(R.id.description);
         sunriseIcon = view.findViewById(R.id.sunrisetIcon);
         sunsetIcon = view.findViewById(R.id.sunsetIcon);
         tempIcon = view.findViewById(R.id.tempIcon);
 
         descriptionIcon.setIconSize(70);
         descriptionIcon.setIconColor(Color.WHITE);
+
         LocalTime timeNow = LocalTime.now();
-
-        //timeNow= LocalTime.of(20,20,20);
-
-        if(timeNow.isBefore(weather.getSunset())&&timeNow.isAfter(weather.getSunrise())){
-            switch (this.location.getWeather().getDescription()){
+        if (timeNow.isBefore(weather.getSunset()) && timeNow.isAfter(weather.getSunrise())) {
+            switch (this.location.getWeather().getDescription()) {
                 case "clear sky":
-                case "sunny": descriptionIcon.setIconResource(getString(R.string.wi_day_sunny)); break;
+                case "sunny":
+                    descriptionIcon.setIconResource(getString(R.string.wi_day_sunny));
+                    break;
                 case "scadered clouds":
                 case "overcast clouds":
                 case "broken clouds":
-                case "few clouds": descriptionIcon.setIconResource(getString(R.string.wi_day_cloudy));break;
-                case "clouds": descriptionIcon.setIconResource(getString(R.string.wi_cloud));break;
-                case "light rain": descriptionIcon.setIconResource(getString(R.string.wi_raindrops));
-                case "rain": descriptionIcon.setIconResource(getString(R.string.wi_day_rain)); break;
-                case "fog": descriptionIcon.setIconResource(getString(R.string.wi_day_fog)); break;
-                default: descriptionIcon.setIconResource(getString(R.string.wi_alien));
+                case "few clouds":
+                    descriptionIcon.setIconResource(getString(R.string.wi_day_cloudy));
+                    break;
+                case "clouds":
+                    descriptionIcon.setIconResource(getString(R.string.wi_cloud));
+                    break;
+                case "light rain":
+                    descriptionIcon.setIconResource(getString(R.string.wi_raindrops));
+                case "rain":
+                    descriptionIcon.setIconResource(getString(R.string.wi_day_rain));
+                    break;
+                case "fog":
+                    descriptionIcon.setIconResource(getString(R.string.wi_day_fog));
+                    break;
+                default:
+                    descriptionIcon.setIconResource(getString(R.string.wi_alien));
             }
-        }
-        else{
-            switch (this.location.getWeather().getDescription()){
-                case "clear sky": descriptionIcon.setIconResource(getString(R.string.wi_night_clear));
+        } else {
+            switch (this.location.getWeather().getDescription()) {
+                case "clear sky":
+                    descriptionIcon.setIconResource(getString(R.string.wi_night_clear));
                 case "scadered clouds":
                 case "overcast clouds":
                 case "broken clouds":
-                case "few clouds": descriptionIcon.setIconResource(getString(R.string.wi_night_alt_cloudy));break;
-                case "clouds": descriptionIcon.setIconResource(getString(R.string.wi_cloud));break;
-                case "light rain": descriptionIcon.setIconResource(getString(R.string.wi_raindrops));
-                case "rain": descriptionIcon.setIconResource(getString(R.string.wi_night_alt_rain)); break;
-                case "fog": descriptionIcon.setIconResource(getString(R.string.wi_night_fog)); break;
-                default: descriptionIcon.setIconResource(getString(R.string.wi_alien));
+                case "few clouds":
+                    descriptionIcon.setIconResource(getString(R.string.wi_night_alt_cloudy));
+                    break;
+                case "clouds":
+                    descriptionIcon.setIconResource(getString(R.string.wi_cloud));
+                    break;
+                case "light rain":
+                    descriptionIcon.setIconResource(getString(R.string.wi_raindrops));
+                case "rain":
+                    descriptionIcon.setIconResource(getString(R.string.wi_night_alt_rain));
+                    break;
+                case "fog":
+                    descriptionIcon.setIconResource(getString(R.string.wi_night_fog));
+                    break;
+                default:
+                    descriptionIcon.setIconResource(getString(R.string.wi_alien));
             }
         }
         sunriseIcon.setIconSize(25);
@@ -151,7 +160,7 @@ public class LocationFragment extends Fragment {
 
         sunsetIcon.setIconSize(25);
         sunsetIcon.setIconResource(getString(R.string.wi_sunset));
-       sunsetIcon.setIconColor(Color.GRAY);
+        sunsetIcon.setIconColor(Color.GRAY);
 
         tempIcon.setIconSize(25);
         tempIcon.setIconResource(getString(R.string.wi_thermometer));
@@ -163,10 +172,15 @@ public class LocationFragment extends Fragment {
         TextView producers = view.findViewById(R.id.producerTv);
         final ConstraintLayout cl = view.findViewById(R.id.locationFragmentCL);
 
+        locationName.setText(this.location.getName());
+        if(this.location.getRunningNum()==1){
+            devices.setText(this.location.getRunningNum()+" Gerät läuft");
+        }
+        else{
+            devices.setText(this.location.getRunningNum() + " Geräte laufen");
+        }
 
-        locationName.setText(location.getName());
-        devices.setText("Geräte\n" + location.getRunningNum() + " Geräte laufen");
-        producers.setText("Photovoltaik\nMomentan erzeugte Wattstunden:  " + location.getCurrentEnergy() + " Wh");
+        producers.setText("Momentan erzeugte Watt:  " + this.location.getCurrentEnergy() + " W");
         cl.setOnLongClickListener(view12 -> {
             PopupMenu popupMenu = new PopupMenu(view12.getContext(), locationName);
             popupMenu.inflate(R.menu.producer_menu);
@@ -175,7 +189,7 @@ public class LocationFragment extends Fragment {
                     case R.id.edit:
                         Intent intent = new Intent(getContext(), AddingLocationActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putString("locationID", locationID);
+                        bundle.putString("locationID", this.locationID);
                         intent.putExtras(bundle);
                         startActivity(intent);
                         break;
@@ -184,7 +198,7 @@ public class LocationFragment extends Fragment {
                                 .setTitle(getResources().getString(R.string.remove_location))
                                 .setMessage(getResources().getString(R.string.really_delete_location))
                                 .setPositiveButton(getResources().getString(R.string.yes), (dialogInterface, i) -> {
-                                    user.getLocations().remove(user.getLocations().stream().filter(l -> l.getId().equals(locationID)).findFirst().get());
+                                    this.user.getLocations().remove(this.user.getLocations().stream().filter(l -> l.getId().equals(this.locationID)).findFirst().get());
                                     homeFragmentLocation();
 
                                 })
@@ -197,8 +211,6 @@ public class LocationFragment extends Fragment {
                 return true;
             });
             popupMenu.show();
-
-
             return true;
         });
         return view;
@@ -212,7 +224,6 @@ public class LocationFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == DELETED) {
             if (resultCode == Activity.RESULT_OK) {
                 homeFragmentLocation();

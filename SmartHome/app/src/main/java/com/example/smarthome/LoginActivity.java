@@ -17,12 +17,8 @@ import android.widget.Toast;
 import com.example.smarthome.menu.MenuActivity;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
@@ -31,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEt, passwordEt;
     private ProgressBar progressBar;
-
+    private User user;
     private FirebaseAuth mAuth;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -40,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Parser parser = new Parser();
-
+        this.user = User.getInstance();
         this.mAuth = FirebaseAuth.getInstance();
 
         this.emailEt = findViewById(R.id.email);
@@ -57,10 +53,24 @@ public class LoginActivity extends AppCompatActivity {
         });
         loginBtn.setOnClickListener(view -> loginUserAccount());
 
-        if (mAuth.getCurrentUser() != null) {
-            if (mAuth.getCurrentUser().isEmailVerified()) {
+        if (this.mAuth.getCurrentUser() != null) {
+            if (this.mAuth.getCurrentUser().isEmailVerified()) {
 
-                User.getInstance().setFirebaseUser(mAuth.getCurrentUser());
+                this.user.setFirebaseUser(this.mAuth.getCurrentUser());
+            //    this.user.getLoadingData().observe(this, )
+
+                //neuer Versuch
+
+
+
+
+
+
+
+
+
+
+                //Alter Code, funktioniert
                 parser.callGetLocations(result -> result);
                 parser.callCompanies();
                 finish();
@@ -73,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUserAccount() {
-
         this.progressBar.setVisibility(View.VISIBLE);
 
         String email, password;
@@ -99,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(LoginActivity.this, "Please verify your email first.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Please verify your email.", Toast.LENGTH_LONG).show();
                 }
             } else {
                 switch (((FirebaseAuthException) Objects.requireNonNull(task.getException())).getErrorCode()) {
@@ -120,6 +129,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    private void loadData(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Parser parser = new Parser();
+                parser.callGetLocations(result -> result);
+
+            }
+        })
     }
 
 }

@@ -127,7 +127,27 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/devices" />
+
+    <TextView
+        android:id="@+id/devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/geraete"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/weather" />
+
+    <TextView
+        android:id="@+id/producer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/photovoltaik"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/devicesTv" />
 
     <TextView
         android:id="@+id/producerTv"
@@ -139,5 +159,5 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/devicesTv" />
+        app:layout_constraintTop_toBottomOf="@+id/producer" />
 </androidx.constraintlayout.widget.ConstraintLayout>

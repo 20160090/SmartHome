@@ -12,22 +12,20 @@ public class Weather {
     private double temp;
     private LocalTime sunset;
     private LocalTime sunrise;
-    public Weather(){
-    }
-    public Weather(LocalDateTime date, String description, double temp, LocalTime sunrise, LocalTime sunset){
-        this.date=date;
-        this.description=description;
-        this.temp=temp;
-        this.sunrise=sunrise;
-        this.sunset=sunset;
-    }
-    public Weather(LocalTime sunset){
-        this.sunset=sunset;
 
+    public Weather() {
+    }
+
+    public Weather(LocalDateTime date, String description, double temp, LocalTime sunrise, LocalTime sunset) {
+        this.date = date;
+        this.description = description;
+        this.temp = temp;
+        this.sunrise = sunrise;
+        this.sunset = sunset;
     }
 
     public LocalDateTime getDate() {
-        return date;
+        return this.date;
     }
 
     public void setDate(LocalDateTime date) {
@@ -35,7 +33,7 @@ public class Weather {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(String description) {
@@ -43,7 +41,7 @@ public class Weather {
     }
 
     public double getTemp() {
-        return temp;
+        return this.temp;
     }
 
     public void setTemp(double temp) {
@@ -59,7 +57,7 @@ public class Weather {
     }
 
     public LocalTime getSunrise() {
-        return sunrise;
+        return this.sunrise;
     }
 
     public void setSunrise(LocalTime sunrise) {
