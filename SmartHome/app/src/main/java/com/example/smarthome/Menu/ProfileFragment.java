@@ -1,6 +1,7 @@
 package com.example.smarthome.menu;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,11 @@ public class ProfileFragment extends Fragment {
             this.mAuth.signOut();
             Intent intent = new Intent(getContext(), LoginActivity.class);
             startActivity(intent);
+        });
+        Button faqBtn = view.findViewById(R.id.faqBtn);
+        faqBtn.setOnClickListener(view2 -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://goga-barabadze.github.io/SmartHome-FAQ/"));
+            startActivity(browserIntent);
         });
 
         return view;

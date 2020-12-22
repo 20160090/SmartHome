@@ -55,7 +55,10 @@ public class Location {
     }
 
     public void addProducer(Producer producer) {
-        this.producers.add(producer);
+        if(!this.producers.stream().anyMatch(p -> p.getId().equals(producer.getId()))){
+            this.producers.add(producer);
+        }
+
     }
 
     public int getRunningNum() {

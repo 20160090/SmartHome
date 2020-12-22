@@ -59,7 +59,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = this.mValues.get(position);
         holder.mInfo.setText(this.mValues.get(position).getName() + "\n" + this.mValues.get(position).getAverageConsumption());
-        holder.mConsumption.setText("Momentan verbrauch: "+""+this.mValues.get(position).getConsumption()+"");
+        holder.mConsumption.setText("Momentaner Verbrauch: "+""+this.mValues.get(position).getConsumption()+"");
         holder.itemView.setOnClickListener(view -> {
 
             PopupMenu popupMenu = new PopupMenu(view.getContext(), holder.mInfo);

@@ -2,8 +2,10 @@ package com.example.smarthome.model;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
@@ -19,6 +21,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
@@ -33,7 +36,7 @@ public class Parser {
         this.mFunction = FirebaseFunctions.getInstance();
     }
 
-    private void callDevices(Location location) {
+    public void callDevices(Location location) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
         data.put("email", this.user.getFirebaseUser().getEmail());
@@ -86,14 +89,17 @@ public class Parser {
                 JSONObject act = array.getJSONObject(i);
                 JSONObject object = act.getJSONObject("Location");
                 Location location = this.parseLocation(object);
-                callGetWeather(location);
-                callDevices(location);
-                callGenerator(location);
-                this.user.getLocations().add(location);
+                parseOneLocation(location);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    public void parseOneLocation(Location location){
+        callGetWeather(location);
+        callDevices(location);
+        callGenerator(location);
+        this.user.addLocation(location);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -302,8 +308,8 @@ public class Parser {
                         .call(data)
                         .addOnSuccessListener(task -> {
                             try {
-                                JSONObject typs = new JSONObject(task.getData().toString());
-                                company.setDevices(parsePossibleTypes(typs.getJSONArray("Consumers")));
+                                JSONObject types = new JSONObject(task.getData().toString());
+                                company.setDevices(parsePossibleTypes(types.getJSONArray("Consumers")));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

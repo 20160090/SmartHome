@@ -20,7 +20,10 @@ import android.widget.TextView;
 
 import com.example.smarthome.LocationDetailActivity;
 import com.example.smarthome.adding.AddingLocationActivity;
+import com.example.smarthome.model.Device;
 import com.example.smarthome.model.Location;
+import com.example.smarthome.model.Parser;
+import com.example.smarthome.model.Producer;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 import com.example.smarthome.model.Weather;
@@ -30,6 +33,7 @@ import com.github.pwittchen.weathericonview.WeatherIconView;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 
 public class LocationFragment extends Fragment {
 
@@ -63,6 +67,9 @@ public class LocationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         this.user = User.getInstance();
         readBundle(getArguments());
+        Parser parser = new Parser();
+        parser.parseOneLocation(location);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

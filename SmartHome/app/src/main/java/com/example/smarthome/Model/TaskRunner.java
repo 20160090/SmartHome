@@ -16,7 +16,7 @@ public class TaskRunner {
     }
 
     public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
-        executor.execute();
+      //  executor.execute();
         executor.execute(() -> {
             try {
                 final R result;

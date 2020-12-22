@@ -9,7 +9,7 @@
     <string name="homeTab">Home</string>
     <string name="profileTab">Profile</string>
     <string name="signup">signup</string>
-    <string name="signout">SignOut</string>
+    <string name="signout">Sign off</string>
     <string name="add_new_location">Neuen Standort hinzufügen</string>
     <string name="edit_location">Standort bearbeiten</string>
     <string name="remove_location">Standort entfernen</string>
@@ -58,6 +58,9 @@
     <string name="geraete">Geräte:</string>
     <string name="photovoltaik">Photovoltaik:</string>
     <string name="show">anzeigen</string>
+    <string name="rate_the_app">Rate the App</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="frequently_asked_questions">Frequently Asked Questions</string>
 
 
 </resources>

@@ -168,7 +168,10 @@ public class LocationDetailActivity extends AppCompatActivity {
             this.locationID = bundle.getString("locationID");
             ArrayList<Location> locations = user.getLocations();
             Optional<Location> optLoc = locations.stream().filter(l -> l.getId().equals(locationID)).findFirst();
-            optLoc.ifPresent(value -> this.location = value);
+            optLoc.ifPresent(value -> {
+                this.location = value;
+                parser.callGenerator(this.location);
+            });
         }
     }
 

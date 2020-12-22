@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Optional;
 import java.util.TimeZone;
 
 public class User {
@@ -87,6 +88,22 @@ public class User {
         this.loadingData = loadingData;
     }
 
+    public void addLocation(Location location){
+        Optional<Location> old = this.locations.stream().filter(l -> l.getId().equals(location.getId())).findAny();
+        if(old.isPresent()){
+            old.get().setProducers(location.getProducers());
+            old.get().setDevices(location.getDevices());
+            old.get().setWeather(location.getWeather());
+            old.get().setName(location.getName());
+            old.get().setCity(location.getCity());
+            old.get().setCountry(location.getCountry());
+            old.get().setForecast(location.getForecast());
+            old.get().setZip(location.getZip());
+        }
+        else{
+            this.locations.add(location);
+        }
+    }
     public void loadingAll(){
        TaskRunner taskRunner = new TaskRunner();
         taskRunner.executeAsync(new LoadingAll(firebaseUser.getEmail()), (data) ->{

@@ -103,12 +103,12 @@ public class AddingLocationActivity extends AppCompatActivity {
         }
     }
 
-    public void saveUserLocation(JSONObject object) {
+    public Location parseLocation(JSONObject object) {
         this.location = this.parser.parseLocation(object);
         if (!this.name.getText().toString().isEmpty()) {
             this.location.setName(this.name.getText().toString());
         }
-        this.user.getLocations().add(this.location);
+        return this.location;
     }
 
 
@@ -122,7 +122,7 @@ public class AddingLocationActivity extends AppCompatActivity {
                 .addOnSuccessListener(httpsCallableResult -> {
                     try {
                         JSONObject object = new JSONObject(httpsCallableResult.getData().toString());
-                        saveUserLocation(object);
+                        parseLocation(object);
                         callFunctionAddLocationData();
 
                     } catch (JSONException e) {
@@ -176,12 +176,11 @@ public class AddingLocationActivity extends AppCompatActivity {
                         Intent intent = new Intent(AddingLocationActivity.this, LocationDetailActivity.class);
                         intent.putExtras(bundle);
                         startActivityForResult(intent, LAUNCH_ADDING_ACTIVITY);
-                        finish();
                     } else {
                         Intent returnIntent = new Intent();
                         setResult(Activity.RESULT_OK, returnIntent);
-                        finish();
                     }
+                    finish();
                 });
     }
 }
