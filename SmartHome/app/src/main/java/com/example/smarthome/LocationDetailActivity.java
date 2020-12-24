@@ -366,7 +366,11 @@ public class LocationDetailActivity extends AppCompatActivity {
                             JSONObject object = new JSONObject(task.getData().toString());
                             Device consumer = new Device(object.getString("consumerID"), data.get("consumerName"), this.selectedType.getType(), object.getString("state"), data.get("consumerSerial"), data.get("companyName"), this.selectedType.getAverageConsumption());
                             this.location.addDevice(consumer);
+                            Map<String, String> consumptionData= new HashMap<>();
+                            consumptionData.put("consumerType",consumer.getPossibleDeviceType());
+                            parser.callConsumerData(consumer.getPossibleDeviceType(), consumer);
                             this.adapterDevices.notifyDataSetChanged();
+                            texts();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

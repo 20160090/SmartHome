@@ -14,6 +14,11 @@ public class Weather {
     private LocalTime sunrise;
 
     public Weather() {
+        date = LocalDateTime.now();
+        description = "notSetJet";
+        temp=-100;
+        sunrise = LocalTime.now();
+        sunset = LocalTime.now();
     }
 
     public Weather(LocalDateTime date, String description, double temp, LocalTime sunrise, LocalTime sunset) {

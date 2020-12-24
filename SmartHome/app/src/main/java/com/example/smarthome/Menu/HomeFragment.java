@@ -11,10 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.smarthome.adding.AddingLocationActivity;
 import com.example.smarthome.model.Location;
+import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,6 +29,7 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton add;
     private User user;
     private TextView noLocation;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     public HomeFragment() {
@@ -45,6 +48,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         this.add = view.findViewById(R.id.addFAB);
         this.noLocation = view.findViewById(R.id.noLocation);
+        this.swipeRefreshLayout = view.findViewById(R.id.swipeContainer);
 
         MenuActivity menuActivity = (MenuActivity) getActivity();
         ViewPager2 viewPager2 = Objects.requireNonNull(menuActivity).getViewPager();
@@ -66,6 +70,17 @@ public class HomeFragment extends Fragment {
             intent.putExtras(bundle);
             startActivity(intent);
         });
+        this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                                         @Override
+                                                         public void onRefresh() {
+                                                             Parser parser = new Parser();
+                                                             parser.callGetLocations(result -> result);
+                                                             locations();
+                                                             //swipeRefreshLayout.setRefreshing(false);
+                                                         }
+                                                     }
+
+        );
         return view;
     }
 

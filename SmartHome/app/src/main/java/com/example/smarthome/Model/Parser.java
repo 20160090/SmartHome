@@ -111,10 +111,12 @@ public class Parser {
                 .call(data)
                 .addOnSuccessListener(task -> {
                     try {
+                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
                         JSONObject object = new JSONObject(task.getData().toString());
                         setWeather(object, location);
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        location.setWeather(new Weather());
                     }
                 })
                 .addOnFailureListener(Throwable::printStackTrace);
@@ -201,24 +203,30 @@ public class Parser {
             device.setPossibleDeviceType(object.getString("consumerType"));
             device.setAverageConsumption(object.getDouble("consumerAverageConsumption"));
 
-            Map<String, String> data = new HashMap<>();
-            data.put("consumerType",device.getPossibleDeviceType());
+            callConsumerData(device.getPossibleDeviceType(), device);
 
-            mFunction.getHttpsCallable("getConsumerData")
-                    .call(data)
-                    .addOnSuccessListener(result -> {
-                        try {
-                            JSONObject object1 = new JSONObject(result.getData().toString());
-                            device.setConsumption(object.getDouble("consumption"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    });
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return device;
+    }
+    public void callConsumerData(String type, Device device){
+        Map<String, String> data = new HashMap<>();
+        data.put("consumerType",type);
+        mFunction.getHttpsCallable("getConsumerData")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    try {
+                        JSONObject obj = new JSONObject(result.getData().toString());
+                        JSONObject object = obj.getJSONArray("Consumers").getJSONObject(0);
+                        device.setConsumption(object.getDouble("consumption"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        device.setConsumption(-1.0);
+                    }
+                })
+        .addOnFailureListener(e -> e.printStackTrace());
     }
 
     public PossibleDeviceType parsePossibleDeviceType(JSONObject object) {

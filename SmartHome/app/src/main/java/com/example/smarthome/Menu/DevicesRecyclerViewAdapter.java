@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.example.smarthome.LocationDetailActivity;
 import com.example.smarthome.model.Device;
 import com.example.smarthome.R;
+import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -80,8 +81,17 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                                 .getHttpsCallable("updateState")
                                 .call(data)
                                 .addOnSuccessListener(result -> {
-                                    this.mValues.set(position, device);
-                                    notifyItemChanged(position);
+                                    try {
+                                        JSONObject object = new JSONObject(result.getData().toString());
+                                        device.setState(device.switchState(object.getString("consumerState").toUpperCase()));
+                                        Parser parser = new Parser();
+                                        parser.callConsumerData(device.getPossibleDeviceType(), device);
+                                        this.mValues.set(position, device);
+                                        notifyItemChanged(position);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 })
                         .addOnFailureListener(e -> {
                             e.printStackTrace();
@@ -93,9 +103,15 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                                 .getHttpsCallable("updateState")
                                 .call(data)
                                 .addOnSuccessListener(result -> {
-                                    device.switchState(result.getData().toString());
-                                    this.mValues.set(position, device);
-                                    notifyItemChanged(position);
+                                    try {
+                                        JSONObject object = new JSONObject(result.getData().toString());
+                                        device.setState(device.switchState(object.getString("consumerState").toUpperCase()));
+                                        this.mValues.set(position, device);
+                                        notifyItemChanged(position);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 });
                         break;
                     case R.id.delete:

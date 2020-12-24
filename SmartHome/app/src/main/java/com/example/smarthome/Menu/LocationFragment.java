@@ -67,8 +67,8 @@ public class LocationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         this.user = User.getInstance();
         readBundle(getArguments());
-        Parser parser = new Parser();
-        parser.parseOneLocation(location);
+      //  Parser parser = new Parser();
+      //  parser.parseOneLocation(location);
 
     }
 
@@ -96,8 +96,8 @@ public class LocationFragment extends Fragment {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_TIME;
 
         descriptionTv.setText(weather.getDescription());
-        sunsetTv.setText(weather.getSunset().truncatedTo(ChronoUnit.SECONDS).format(formatter));
-        sunriseTv.setText(weather.getSunrise().truncatedTo(ChronoUnit.SECONDS).format(formatter));
+        sunsetTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunset()));
+        sunriseTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunset()));
         tempTv.setText("" + weather.getTemp() + " °C");
 
         WeatherIconView descriptionIcon, sunriseIcon, sunsetIcon, tempIcon;
