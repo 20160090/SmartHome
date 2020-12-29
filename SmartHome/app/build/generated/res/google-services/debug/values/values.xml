@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">536169919010-p7emh4vsnqqmnh2uj4u0867slcqv9n3r.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://diplomarbeit-33903.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">536169919010</string>
+    <string name="google_api_key" translatable="false">AIzaSyB3i0TnpUxqImltN0TWL9d6GfUHTaHIOvc</string>
+    <string name="google_app_id" translatable="false">1:536169919010:android:1b182652e57ad909ef507b</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyB3i0TnpUxqImltN0TWL9d6GfUHTaHIOvc</string>
+    <string name="google_storage_bucket" translatable="false">diplomarbeit-33903.appspot.com</string>
+    <string name="project_id" translatable="false">diplomarbeit-33903</string>
+</resources>
