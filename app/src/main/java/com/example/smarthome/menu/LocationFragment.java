@@ -97,7 +97,7 @@ public class LocationFragment extends Fragment {
 
         descriptionTv.setText(weather.getDescription());
         sunsetTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunset()));
-        sunriseTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunset()));
+        sunriseTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunrise()));
         tempTv.setText("" + weather.getTemp() + " °C");
 
         WeatherIconView descriptionIcon, sunriseIcon, sunsetIcon, tempIcon;

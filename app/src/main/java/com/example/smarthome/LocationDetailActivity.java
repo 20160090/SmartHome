@@ -73,10 +73,10 @@ public class LocationDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_detail);
+        readBundle(getIntent().getExtras());
         this.mFunctions = FirebaseFunctions.getInstance();
         this.parser = new Parser();
         this.user = User.getInstance();
-        readBundle(getIntent().getExtras());
 
         this.companies = this.user.getCompanies();
         this.types = this.companies.get(0).getDevices();

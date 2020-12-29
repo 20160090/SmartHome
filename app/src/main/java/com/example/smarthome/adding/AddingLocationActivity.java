@@ -22,6 +22,7 @@ import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.json.JSONException;
@@ -105,7 +106,7 @@ public class AddingLocationActivity extends AppCompatActivity {
 
     public Location parseLocation(JSONObject object) {
         this.location = this.parser.parseLocation(object);
-        if (!this.name.getText().toString().isEmpty()) {
+        if (!this.name.getText().toString().equals("")) {
             this.location.setName(this.name.getText().toString());
         }
         return this.location;
@@ -128,7 +129,8 @@ public class AddingLocationActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                });
+                })
+        .addOnFailureListener(e -> e.printStackTrace());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -95,7 +95,8 @@ public class Parser {
             e.printStackTrace();
         }
     }
-    public void parseOneLocation(Location location){
+
+    public void parseOneLocation(Location location) {
         callGetWeather(location);
         callDevices(location);
         callGenerator(location);
@@ -169,8 +170,8 @@ public class Parser {
         try {
             producer.setId(object.getString("pvID"));
             producer.setType(object.getString("generatorType"));
-            Map<String, String> data =new HashMap<>();
-            data.put("pvID",producer.getId());
+            Map<String, String> data = new HashMap<>();
+            data.put("pvID", producer.getId());
             this.mFunction
                     .getHttpsCallable("getPVData")
                     .call(data)
@@ -179,9 +180,11 @@ public class Parser {
                             JSONObject object1 = new JSONObject(result.getData().toString());
                             JSONArray array = object1.getJSONArray("PVData");
                             JSONObject act = array.getJSONObject(3);
-                            double value = act.getDouble("value");
-
-                            producer.setCurrentlyProduced(value);
+                            try {
+                                producer.setCurrentlyProduced(act.getDouble("value"));
+                            } catch (JSONException e) {
+                                producer.setCurrentlyProduced(0.0);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -198,7 +201,7 @@ public class Parser {
             device.setId(object.getString("consumerID"));
             device.setName(object.getString("consumerName"));
             device.setSerialNumber(object.getString("consumerSerial"));
-            device.setState(device.switchState( object.getString("consumerState").toUpperCase()));
+            device.setState(device.switchState(object.getString("consumerState").toUpperCase()));
             device.setCompany(object.getString("companyName"));
             device.setPossibleDeviceType(object.getString("consumerType"));
             device.setAverageConsumption(object.getDouble("consumerAverageConsumption"));
@@ -211,9 +214,10 @@ public class Parser {
         }
         return device;
     }
-    public void callConsumerData(String type, Device device){
+
+    public void callConsumerData(String type, Device device) {
         Map<String, String> data = new HashMap<>();
-        data.put("consumerType",type);
+        data.put("consumerType", type);
         mFunction.getHttpsCallable("getConsumerData")
                 .call(data)
                 .addOnSuccessListener(result -> {
@@ -226,7 +230,7 @@ public class Parser {
                         device.setConsumption(-1.0);
                     }
                 })
-        .addOnFailureListener(e -> e.printStackTrace());
+                .addOnFailureListener(e -> e.printStackTrace());
     }
 
     public PossibleDeviceType parsePossibleDeviceType(JSONObject object) {
