@@ -116,7 +116,6 @@ public class AddingLocationActivity extends AppCompatActivity {
     public void callFronius() {
         Map<String, String> data = new HashMap<>();
         data.put("pvID", this.pvId.getText().toString());
-        data.put("name", this.name.getText().toString());
         this.mFunction
                 .getHttpsCallable("getFroniusLocation")
                 .call(data)
@@ -172,6 +171,7 @@ public class AddingLocationActivity extends AppCompatActivity {
                     this.parser.callGenerator(this.location);
                     this.progressBar.setVisibility(View.GONE);
                     if (this.locationPos < 0) {
+                        this.user.addLocation(this.location);
                         Bundle bundle = new Bundle();
                         bundle.putString("locationID", this.location.getId());
                         bundle.putBoolean("adding", true);

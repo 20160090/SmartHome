@@ -73,10 +73,10 @@ public class LocationDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_detail);
-        readBundle(getIntent().getExtras());
         this.mFunctions = FirebaseFunctions.getInstance();
         this.parser = new Parser();
         this.user = User.getInstance();
+        readBundle(getIntent().getExtras());
 
         this.companies = this.user.getCompanies();
         this.types = this.companies.get(0).getDevices();
@@ -380,7 +380,7 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.btnCancel.setOnClickListener(view -> this.dialog.dismiss());
     }
 
-    public void editConsumer(Device device) {
+ /*   public void editConsumer(Device device) {
         this.builder = new AlertDialog.Builder(this);
         final View devicePopupView = getLayoutInflater().inflate(R.layout.popup_device, null);
         this.deviceName = devicePopupView.findViewById(R.id.deviceName);
@@ -464,6 +464,6 @@ public class LocationDetailActivity extends AppCompatActivity {
         });
         this.btnCancel.setOnClickListener(view -> this.dialog.dismiss());
     }
-
+*/
 
 }
