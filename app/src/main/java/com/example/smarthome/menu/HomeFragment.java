@@ -70,15 +70,11 @@ public class HomeFragment extends Fragment {
             intent.putExtras(bundle);
             startActivity(intent);
         });
-        this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                                                         @Override
-                                                         public void onRefresh() {
-                                                             Parser parser = new Parser();
-                                                             parser.callGetLocations(result -> result);
-                                                             locations();
-                                                             //swipeRefreshLayout.setRefreshing(false);
-                                                         }
-                                                     }
+        this.swipeRefreshLayout.setOnRefreshListener(() -> {
+
+            Parser.getInstance().callGetLocations();
+            locations();
+        }
 
         );
         return view;
@@ -115,6 +111,7 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < this.user.getLocations().size(); i++) {
             Location loc = this.user.getLocations().get(i);
+            Parser.getInstance().parseOneLocation(loc);
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             Fragment location = LocationFragment.newInstance(loc.getId());
             switch (i) {
@@ -142,6 +139,7 @@ public class HomeFragment extends Fragment {
         } else {
             this.noLocation.setVisibility(View.GONE);
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

@@ -97,8 +97,8 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                                     try {
                                         JSONObject object = new JSONObject(result.getData().toString());
                                         device.setState(device.switchState(object.getString("consumerState").toUpperCase()));
-                                        Parser parser = new Parser();
-                                        parser.callConsumerData(device.getPossibleDeviceType(), device);
+
+                                        Parser.getInstance().callConsumerData(device.getPossibleDeviceType(), device);
                                         this.mValues.set(position, device);
                                         notifyItemChanged(position);
                                     } catch (JSONException e) {

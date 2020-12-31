@@ -51,10 +51,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Parser parser = new Parser();
+        this.parser = Parser.getInstance();
         this.user = User.getInstance();
         this.mAuth = FirebaseAuth.getInstance();
-        this.parser = new Parser();
+        this.parser =Parser.getInstance();
 
         this.emailEt = findViewById(R.id.email);
         this.passwordEt = findViewById(R.id.password);
@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 //Alter Code, funktioniert
-                parser.callGetLocations(result -> result);
+                parser.callGetLocations();
                 parser.callCompanies();
                 finish();
                 Intent Main = new Intent(LoginActivity.this, MenuActivity.class);
@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-                    parser.callGetLocations(result -> result);
+                    parser.callGetLocations();
                     parser.callCompanies();
                     finish();
 

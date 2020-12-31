@@ -1,6 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/weather"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/houseTv"
+    android:layout_width="match_parent"
+    android:layout_height="175dp"
+    android:layout_marginTop="16dp"
+    android:background="@drawable/rounded_weather">
+
+    <com.github.pwittchen.weathericonview.WeatherIconView
+        android:id="@+id/description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sunrisetIcon"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp" />
+
+    <TextView
+        android:id="@+id/descriptionTv"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sunrisetIcon"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="18sp" />
+
+    <com.github.pwittchen.weathericonview.WeatherIconView
+        android:id="@+id/tempIcon"
+        app:layout_constraintBottom_toTopOf="@+id/sunrisetIcon"
+        app:layout_constraintEnd_toStartOf="@id/sunriseTv"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp" />
+
+    <TextView
+        android:id="@+id/tempTv"
+        app:layout_constraintBottom_toTopOf="@+id/sunriseTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:textSize="18sp" />
+
+    <com.github.pwittchen.weathericonview.WeatherIconView
+        android:id="@+id/sunrisetIcon"
+        app:layout_constraintBottom_toTopOf="@id/sunsetIcon"
+        app:layout_constraintEnd_toStartOf="@+id/sunriseTv"
+        app:layout_constraintTop_toBottomOf="@id/tempIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/sunriseTv"
+        app:layout_constraintBottom_toTopOf="@+id/sunsetTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:textSize="18sp" />
+
+    <com.github.pwittchen.weathericonview.WeatherIconView
+        android:id="@+id/sunsetIcon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sunsetTv"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@id/description"
+        app:layout_constraintTop_toBottomOf="@+id/sunrisetIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/sunsetTv"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sunrisetIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="18sp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

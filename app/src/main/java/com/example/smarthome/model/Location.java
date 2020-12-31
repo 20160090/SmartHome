@@ -15,7 +15,7 @@ public class Location {
     private String city;
     private String country;
     private Weather weather;
-    private Map<String, Weather> forecast;
+    private ArrayList<Forecast> forecast;
     private String id;
 
     public Location() {
@@ -26,7 +26,7 @@ public class Location {
         this.city="unknown";
         this.country = "unknown";
         this.weather = new Weather();
-        this.forecast = new HashMap<String, Weather>();
+        this.forecast =new ArrayList<>();
         this.id="";
     }
 
@@ -38,14 +38,16 @@ public class Location {
         this.devices = new ArrayList<>();
         this.producers = new ArrayList<>();
         this.weather = new Weather();
-        this.forecast = new HashMap<String, Weather>();
+        this.forecast = new ArrayList<>();
         this.id=id;
     }
 
-    public Location(String id, String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers, Weather weather, HashMap<String, Weather> forecast) {
+    public Location(String id, String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers, Weather weather, ArrayList<Forecast> forecast) {
         this(id, name, zip, city, country);
         this.setDevices(devices);
         this.setProducers(producers);
+        this.weather = weather;
+        this.forecast = forecast;
     }
 
 
@@ -141,11 +143,11 @@ public class Location {
         this.weather = weather;
     }
 
-    public Map<String, Weather> getForecast() {
+    public ArrayList<Forecast> getForecast() {
         return this.forecast;
     }
 
-    public void setForecast(Map<String, Weather> forecast) {
+    public void setForecast(ArrayList<Forecast> forecast) {
         this.forecast = forecast;
     }
 

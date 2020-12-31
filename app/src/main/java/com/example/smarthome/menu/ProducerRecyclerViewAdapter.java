@@ -1,26 +1,37 @@
 package com.example.smarthome.menu;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.LocationDetailActivity;
+import com.example.smarthome.model.Company;
+import com.example.smarthome.model.PossibleDeviceType;
 import com.example.smarthome.model.Producer;
 import com.example.smarthome.R;
 import com.example.smarthome.model.User;
 import com.google.firebase.functions.FirebaseFunctions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRecyclerViewAdapter.ViewHolder> {
     private final User user = User.getInstance();
@@ -55,12 +66,12 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
             popupMenu.inflate(R.menu.producer_menu);
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()) {
-                    case R.id.edit:
+                   /* case R.id.edit:
                         this.mValues.set(position, producer);
                         notifyItemChanged(position);
-                        break;
+                        break;*/
                     case R.id.delete:
-                        FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+                      /*  FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
                         Map<String, String> data = new HashMap<>();
                         if (this.user.getLocations().stream().filter(l -> l.getId().equals(this.locationID)).findFirst().get().getProducers().size() > 1) {
                             data.put("email", this.user.getFirebaseUser().getEmail());
@@ -83,7 +94,7 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
                                     .addOnSuccessListener(result -> {
                                         ((LocationDetailActivity)context).finish();
                                     });
-                        }
+                        }*/
                         break;
                     default:
                         return false;
@@ -112,4 +123,6 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
 
         }
     }
+
+
 }

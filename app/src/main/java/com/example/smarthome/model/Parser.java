@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,12 +31,171 @@ import java.util.function.Function;
 public class Parser {
     private final User user;
     private final FirebaseFunctions mFunction;
+    private static final Parser parser = new Parser();
 
     public Parser() {
         this.user = User.getInstance();
         this.mFunction = FirebaseFunctions.getInstance();
     }
 
+    public static Parser getInstance() {
+        return parser;
+    }
+
+
+    //region Location
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void callGetLocations() {
+        Map<String, String> data = new HashMap<>();
+        data.put("email", User.getInstance().getFirebaseUser().getEmail());
+        this.mFunction.getHttpsCallable("getLocations")
+                .call(data)
+                .continueWith(task -> {
+                    try {
+                        JSONObject object = new JSONObject(task.getResult().getData().toString());
+                        JSONArray array = object.getJSONArray("Locations");
+                        parseGetLocations(array);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return task;
+                });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void parseGetLocations(JSONArray array) {
+        try {
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject act = array.getJSONObject(i);
+                JSONObject object = act.getJSONObject("Location");
+                Location location = this.parseLocation(object);
+                parseOneLocation(location);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Location parseLocation(JSONObject object) {
+        Location location = new Location();
+        try {
+            location.setId(object.getString("locationID"));
+            location.setName(object.getString("name"));
+            location.setZip(object.getInt("zip"));
+            location.setCity(object.getString("city"));
+            location.setCountry(object.getString("country"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return location;
+    }
+
+    public void parseOneLocation(Location location) {
+        callGetWeather(location);
+        callGetForecast(location);
+        callDevices(location);
+        callGenerator(location);
+        this.user.addLocation(location);
+    }
+    //endregion
+
+    //region Weather&Forecast
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void callGetWeather(Location location) {
+        Map<String, String> data = new HashMap<>();
+        data.put("locationID", location.getId());
+        data.put("city", location.getCity());
+        this.mFunction.getHttpsCallable("getWeather")
+                .call(data)
+                .addOnSuccessListener(task -> {
+                    try {
+                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
+                        JSONObject object = new JSONObject(task.getData().toString());
+
+                        location.setWeather(this.parseWeather(object));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        location.setWeather(new Weather());
+                    }
+                });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Weather parseWeather(JSONObject object) {
+        Weather weather = new Weather();
+        try {
+            weather.setWeather(parseOneForecast(object));
+            long unix_Secons = object.getLong("sunset");
+            Date date = new Date(unix_Secons * 1000L);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+            sdf.setTimeZone(TimeZone.getTimeZone("MEZ"));
+            weather.setSunset(date.toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
+            unix_Secons = object.getLong("sunrise");
+            date = new Date(unix_Secons * 1000L);
+            weather.setSunrise(date.toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return weather;
+    }
+
+    public void callGetForecast(Location location) {
+        Map<String, String> data = new HashMap<>();
+        data.put("locationID", location.getId());
+        data.put("city", location.getCity());
+        this.mFunction.getHttpsCallable("getForecast")
+                .call(data)
+                .addOnSuccessListener(task -> {
+                    try {
+                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
+                        JSONObject object = new JSONObject(task.getData().toString());
+                        location.setForecast(parseForecast(object.getJSONArray("forcast")));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        location.setWeather(new Weather());
+                    }
+                });
+
+    }
+
+    public ArrayList<Forecast> parseForecast(JSONArray array) {
+        ArrayList<Forecast> forecast = new ArrayList<>();
+        try {
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                forecast.add(parseOneForecast(obj));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return forecast;
+    }
+
+    public Forecast parseOneForecast(JSONObject object) {
+        Forecast forecast = new Forecast();
+        try {
+            try {
+                long unixTime = object.getLong("dt");
+                Instant instant = Instant.ofEpochSecond(unixTime);
+                forecast.setTime(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            } catch (Exception e) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                forecast.setTime(LocalDateTime.parse(object.getString("dt"), formatter));
+            }
+
+            forecast.setDescription(object.getString("description"));
+            forecast.setTemp(object.getDouble("temp"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return forecast;
+    }
+//endregion
+
+    //region Devices
     public void callDevices(Location location) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
@@ -59,6 +219,45 @@ public class Parser {
                 });
     }
 
+    public Device parseDevice(JSONObject object) {
+        Device device = new Device();
+        try {
+            device.setId(object.getString("consumerID"));
+            device.setName(object.getString("consumerName"));
+            device.setSerialNumber(object.getString("consumerSerial"));
+            device.setState(device.switchState(object.getString("consumerState").toUpperCase()));
+            device.setCompany(object.getString("companyName"));
+            device.setPossibleDeviceType(object.getString("consumerType"));
+            device.setAverageConsumption(object.getDouble("consumerAverageConsumption"));
+
+            callConsumerData(device.getPossibleDeviceType(), device);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return device;
+    }
+
+    public void callConsumerData(String type, Device device) {
+        Map<String, String> data = new HashMap<>();
+        data.put("consumerType", type);
+        mFunction.getHttpsCallable("getConsumerData")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    try {
+                        JSONObject obj = new JSONObject(result.getData().toString());
+                        JSONObject object = obj.getJSONArray("Consumers").getJSONObject(0);
+                        device.setConsumption(object.getDouble("consumption"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        device.setConsumption(-1.0);
+                    }
+                })
+                .addOnFailureListener(e -> e.printStackTrace());
+    }
+    //endregion
+
+    //region Producer
     public void callGenerator(Location location) {
         Map<String, String> data = new HashMap<>();
         data.put("email", this.user.getFirebaseUser().getEmail());
@@ -79,90 +278,6 @@ public class Parser {
                         e.printStackTrace();
                     }
                 });
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void parseGetLocations(JSONArray array) {
-        try {
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject act = array.getJSONObject(i);
-                JSONObject object = act.getJSONObject("Location");
-                Location location = this.parseLocation(object);
-                parseOneLocation(location);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void parseOneLocation(Location location) {
-        callGetWeather(location);
-        callDevices(location);
-        callGenerator(location);
-        this.user.addLocation(location);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void callGetWeather(Location location) {
-        Map<String, String> data = new HashMap<>();
-        data.put("locationID", location.getId());
-        data.put("city", location.getCity());
-        this.mFunction.getHttpsCallable("getWeather")
-                .call(data)
-                .addOnSuccessListener(task -> {
-                    try {
-                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
-                        JSONObject object = new JSONObject(task.getData().toString());
-                        setWeather(object, location);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        location.setWeather(new Weather());
-                    }
-                })
-                .addOnFailureListener(Throwable::printStackTrace);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void callGetLocations(Function<HttpsCallableResult, HttpsCallableResult> callBack) {
-        Map<String, String> data = new HashMap<>();
-        data.put("email", User.getInstance().getFirebaseUser().getEmail());
-        this.mFunction.getHttpsCallable("getLocations")
-                .call(data)
-                .continueWith(task -> {
-                    try {
-                        JSONObject object = new JSONObject(task.getResult().getData().toString());
-                        JSONArray array = object.getJSONArray("Locations");
-                        parseGetLocations(array);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return task;
-                })
-                .addOnCompleteListener(task -> {
-                    callBack.apply(task.getResult().getResult());
-                });
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void setWeather(JSONObject object, Location location) {
-        location.setWeather(this.parseWeather(object));
-    }
-
-    public Location parseLocation(JSONObject object) {
-        Location location = new Location();
-        try {
-            location.setId(object.getString("locationID"));
-            location.setName(object.getString("name"));
-            location.setZip(object.getInt("zip"));
-            location.setCity(object.getString("city"));
-            location.setCountry(object.getString("country"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return location;
     }
 
     public Producer parseProducer(JSONObject object) {
@@ -194,98 +309,9 @@ public class Parser {
         }
         return producer;
     }
+//endregion
 
-    public Device parseDevice(JSONObject object) {
-        Device device = new Device();
-        try {
-            device.setId(object.getString("consumerID"));
-            device.setName(object.getString("consumerName"));
-            device.setSerialNumber(object.getString("consumerSerial"));
-            device.setState(device.switchState(object.getString("consumerState").toUpperCase()));
-            device.setCompany(object.getString("companyName"));
-            device.setPossibleDeviceType(object.getString("consumerType"));
-            device.setAverageConsumption(object.getDouble("consumerAverageConsumption"));
-
-            callConsumerData(device.getPossibleDeviceType(), device);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return device;
-    }
-
-    public void callConsumerData(String type, Device device) {
-        Map<String, String> data = new HashMap<>();
-        data.put("consumerType", type);
-        mFunction.getHttpsCallable("getConsumerData")
-                .call(data)
-                .addOnSuccessListener(result -> {
-                    try {
-                        JSONObject obj = new JSONObject(result.getData().toString());
-                        JSONObject object = obj.getJSONArray("Consumers").getJSONObject(0);
-                        device.setConsumption(object.getDouble("consumption"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        device.setConsumption(-1.0);
-                    }
-                })
-                .addOnFailureListener(e -> e.printStackTrace());
-    }
-
-    public PossibleDeviceType parsePossibleDeviceType(JSONObject object) {
-        PossibleDeviceType type = new PossibleDeviceType();
-        try {
-            type.setId(object.getString("id"));
-            type.setType(object.getString("type"));
-            type.setAverageConsumption(object.getDouble("averageConsumption"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return type;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public Weather parseWeather(JSONObject object) {
-        Weather weather = new Weather();
-        try {
-            long unixTime = object.getLong("dt");
-            Instant instant = Instant.ofEpochSecond(unixTime);
-            weather.setDate(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
-
-            long unix_Secons = object.getLong("sunset");
-            Date date = new Date(unix_Secons * 1000L);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-            sdf.setTimeZone(TimeZone.getTimeZone("MEZ"));
-            weather.setSunset(date.toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
-
-            unix_Secons = object.getLong("sunrise");
-            date = new Date(unix_Secons * 1000L);
-            weather.setSunrise(date.toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
-            weather.setDescription(object.getString("description"));
-            weather.setTemp(object.getDouble("temp"));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return weather;
-    }
-
-    public void callFunctionAddPV(String locationID, String pvID) {
-        Map<String, String> data = new HashMap<>();
-        data.put("email", this.user.getFirebaseUser().getEmail());
-        data.put("locationID", locationID);
-        data.put("pvID", pvID);
-
-        FirebaseFunctions mFunction = FirebaseFunctions.getInstance();
-        mFunction
-                .getHttpsCallable("addPV")
-                .call(data)
-                .addOnSuccessListener(httpsCallableResult -> {
-                });
-
-    }
-
+    //region Companies
     public void callCompanies() {
         FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
         mFunctions
@@ -348,4 +374,5 @@ public class Parser {
         }
         return types;
     }
+    //endregion
 }

@@ -2,6 +2,7 @@ package com.example.smarthome.menu;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -15,8 +16,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.smarthome.LocationDetailActivity;
 import com.example.smarthome.adding.AddingLocationActivity;
@@ -28,12 +34,15 @@ import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 import com.example.smarthome.model.Weather;
 import com.github.pwittchen.weathericonview.WeatherIconView;
+import com.google.firebase.functions.FirebaseFunctions;
 
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LocationFragment extends Fragment {
 
@@ -41,6 +50,7 @@ public class LocationFragment extends Fragment {
     private User user;
     private String locationID;
     private int DELETED = 1;
+    private FirebaseFunctions mFunctions;
 
     public LocationFragment() {
         // Required empty public constructor
@@ -66,9 +76,10 @@ public class LocationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.user = User.getInstance();
+        this.mFunctions = FirebaseFunctions.getInstance();
         readBundle(getArguments());
-      //  Parser parser = new Parser();
-      //  parser.parseOneLocation(location);
+        //  Parser parser = new Parser();
+        //  parser.parseOneLocation(location);
 
     }
 
@@ -95,10 +106,10 @@ public class LocationFragment extends Fragment {
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_TIME;
 
-        descriptionTv.setText(weather.getDescription());
+        descriptionTv.setText(weather.getWeather().getDescription());
         sunsetTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunset()));
         sunriseTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunrise()));
-        tempTv.setText("" + weather.getTemp() + " °C");
+        tempTv.setText("" + weather.getWeather().getTemp() + " °C");
 
         WeatherIconView descriptionIcon, sunriseIcon, sunsetIcon, tempIcon;
         descriptionIcon = view.findViewById(R.id.description);
@@ -111,7 +122,7 @@ public class LocationFragment extends Fragment {
 
         LocalTime timeNow = LocalTime.now();
         if (timeNow.isBefore(weather.getSunset()) && timeNow.isAfter(weather.getSunrise())) {
-            switch (this.location.getWeather().getDescription()) {
+            switch (this.location.getWeather().getWeather().getDescription()) {
                 case "clear sky":
                 case "sunny":
                     descriptionIcon.setIconResource(getString(R.string.wi_day_sunny));
@@ -133,14 +144,16 @@ public class LocationFragment extends Fragment {
                 case "fog":
                     descriptionIcon.setIconResource(getString(R.string.wi_day_fog));
                     break;
+                case "light snow":
+                    descriptionIcon.setIconResource(getString(R.string.wi_day_snow));
                 default:
                     descriptionIcon.setIconResource(getString(R.string.wi_alien));
             }
         } else {
-            switch (this.location.getWeather().getDescription()) {
+            switch (this.location.getWeather().getWeather().getDescription()) {
                 case "clear sky":
                     descriptionIcon.setIconResource(getString(R.string.wi_night_clear));
-                case "scadered clouds":
+                case "scattered clouds":
                 case "overcast clouds":
                 case "broken clouds":
                 case "few clouds":
@@ -157,6 +170,8 @@ public class LocationFragment extends Fragment {
                 case "fog":
                     descriptionIcon.setIconResource(getString(R.string.wi_night_fog));
                     break;
+                case "light snow":
+                    descriptionIcon.setIconResource(getString(R.string.wi_night_snow));
                 default:
                     descriptionIcon.setIconResource(getString(R.string.wi_alien));
             }
@@ -180,34 +195,36 @@ public class LocationFragment extends Fragment {
         final ConstraintLayout cl = view.findViewById(R.id.locationFragmentCL);
 
         locationName.setText(this.location.getName());
-        if(this.location.getRunningNum()==1){
-            devices.setText(this.location.getRunningNum()+" Gerät läuft");
-        }
-        else{
+        if (this.location.getRunningNum() == 1) {
+            devices.setText(this.location.getRunningNum() + " Gerät läuft");
+        } else {
             devices.setText(this.location.getRunningNum() + " Geräte laufen");
         }
 
         producers.setText("Momentan erzeugte Watt:  " + this.location.getCurrentEnergy() + " W");
         cl.setOnLongClickListener(view12 -> {
-            PopupMenu popupMenu = new PopupMenu(view12.getContext(), locationName);
+
+            PopupMenu popupMenu = new PopupMenu(view.getContext(), cl);
             popupMenu.inflate(R.menu.producer_menu);
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()) {
                     case R.id.edit:
-                        Intent intent = new Intent(getContext(), AddingLocationActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("locationID", this.locationID);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
+                        editLocation();
                         break;
                     case R.id.delete:
                         new AlertDialog.Builder(getContext())
                                 .setTitle(getResources().getString(R.string.remove_location))
                                 .setMessage(getResources().getString(R.string.really_delete_location))
                                 .setPositiveButton(getResources().getString(R.string.yes), (dialogInterface, i) -> {
-                                    this.user.getLocations().remove(this.user.getLocations().stream().filter(l -> l.getId().equals(this.locationID)).findFirst().get());
-                                    homeFragmentLocation();
-
+                                    Map<String, String> data = new HashMap<>();
+                                    data.put("locationID", this.locationID);
+                                    data.put("email", this.user.getFirebaseUser().getEmail());
+                                    this.mFunctions
+                                            .getHttpsCallable("deleteLocation")
+                                            .call(data)
+                                            .addOnSuccessListener(result -> {
+                                                this.user.getLocations().remove(location);
+                                            });
                                 })
                                 .setNegativeButton(getResources().getString(R.string.no), null)
                                 .show();
@@ -236,5 +253,43 @@ public class LocationFragment extends Fragment {
                 homeFragmentLocation();
             }
         }
+    }
+
+    public void editLocation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final View locationPopupView = getLayoutInflater().inflate(R.layout.popup_location_edit, null);
+        ProgressBar progressBar = locationPopupView.findViewById(R.id.pB);
+        EditText name = locationPopupView.findViewById(R.id.name);
+        Button btnSave = locationPopupView.findViewById(R.id.saveBtn);
+        Button btnCancel = locationPopupView.findViewById(R.id.backBtn);
+        name.setText(this.location.getName());
+
+        builder.setView(locationPopupView);
+        Dialog dialog = builder.create();
+        dialog.show();
+
+        btnSave.setOnClickListener(view -> {
+            progressBar.setVisibility(View.VISIBLE);
+            Map<String, String> data = new HashMap<>();
+            data.put("email", this.user.getFirebaseUser().getEmail());
+            data.put("locationID", this.locationID);
+            data.put("city", this.location.getCity());
+            data.put("zip", this.location.getZipString());
+            data.put("country", this.location.getCountry());
+            data.put("name", name.getText().toString());
+            btnSave.setClickable(false);
+            btnSave.setBackgroundResource(R.drawable.rounded_btn_disabled);
+
+            mFunctions
+                    .getHttpsCallable("updateLocation")
+                    .call(data)
+                    .addOnSuccessListener(result -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Standort geändert", Toast.LENGTH_LONG).show();
+                        this.location.setName(name.getText().toString());
+                        dialog.dismiss();
+                    });
+        });
+        btnCancel.setOnClickListener(view -> dialog.dismiss());
     }
 }

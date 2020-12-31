@@ -50,7 +50,6 @@ public class LocationDetailActivity extends AppCompatActivity {
     private FirebaseFunctions mFunctions;
 
     private FloatingActionButton add, addDevice, addProducer;
-    private int CHANGED = 1;
     private boolean isFABOpen;
     private String locationID, companyName;
 
@@ -74,54 +73,13 @@ public class LocationDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_detail);
         this.mFunctions = FirebaseFunctions.getInstance();
-        this.parser = new Parser();
+        this.parser = Parser.getInstance();
         this.user = User.getInstance();
         readBundle(getIntent().getExtras());
 
         this.companies = this.user.getCompanies();
         this.types = this.companies.get(0).getDevices();
         this.setTextFields();
-
-
-        final LinearLayout linearLayout = findViewById(R.id.linearLayout2);
-        linearLayout.setOnLongClickListener(view -> {
-            PopupMenu popupMenu = new PopupMenu(view.getContext(), linearLayout);
-            popupMenu.inflate(R.menu.producer_menu);
-            popupMenu.setOnMenuItemClickListener(menuItem -> {
-                switch (menuItem.getItemId()) {
-                    case R.id.edit:
-                        editLocation();
-                        break;
-                    case R.id.delete:
-                        new AlertDialog.Builder(LocationDetailActivity.this)
-                                .setTitle(getResources().getString(R.string.remove_location))
-                                .setMessage(getResources().getString(R.string.really_delete_location))
-                                .setPositiveButton(getResources().getString(R.string.yes), (dialogInterface, i) -> {
-                                    Map<String, String> data = new HashMap<>();
-                                    data.put("locationID", this.locationID);
-                                    data.put("email", this.user.getFirebaseUser().getEmail());
-                                    this.mFunctions
-                                            .getHttpsCallable("deleteLocation")
-                                            .call(data)
-                                            .addOnSuccessListener(result -> {
-                                                this.user.getLocations().remove(location);
-                                                Intent returnIntent = new Intent();
-                                                setResult(Activity.RESULT_OK, returnIntent);
-                                                finish();
-                                            });
-                                })
-                                .setNegativeButton(getResources().getString(R.string.no), null)
-                                .show();
-                        break;
-                    default:
-                        return false;
-                }
-                return true;
-            });
-            popupMenu.show();
-            return true;
-        });
-
 
         this.isFABOpen = false;
         this.add = findViewById(R.id.addFAB);
@@ -216,56 +174,6 @@ public class LocationDetailActivity extends AppCompatActivity {
         } else {
             devicesTv.setVisibility(View.GONE);
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CHANGED) {
-            if (resultCode == Activity.RESULT_OK) {
-                finish();
-                startActivity(getIntent());
-            }
-        }
-    }
-
-    public void editLocation() {
-        this.builder = new AlertDialog.Builder(this);
-        final View locationPopupView = getLayoutInflater().inflate(R.layout.popup_location_edit, null);
-        ProgressBar progressBar = locationPopupView.findViewById(R.id.pB);
-        EditText name = locationPopupView.findViewById(R.id.name);
-        Button btnSave = locationPopupView.findViewById(R.id.saveBtn);
-        Button btnCancel = locationPopupView.findViewById(R.id.backBtn);
-        name.setText(this.location.getName());
-
-        this.builder.setView(locationPopupView);
-        this.dialog = this.builder.create();
-        this.dialog.show();
-
-        btnSave.setOnClickListener(view -> {
-            progressBar.setVisibility(View.VISIBLE);
-            Map<String, String> data = new HashMap<>();
-            data.put("email", this.user.getFirebaseUser().getEmail());
-            data.put("locationID", this.locationID);
-            data.put("city", this.location.getCity());
-            data.put("zip", this.location.getZipString());
-            data.put("country", this.location.getCountry());
-            data.put("name", name.getText().toString());
-            btnSave.setClickable(false);
-            btnSave.setBackgroundResource(R.drawable.rounded_btn_disabled);
-
-            this.mFunctions
-                    .getHttpsCallable("updateLocation")
-                    .call(data)
-                    .addOnSuccessListener(result -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(LocationDetailActivity.this, "Standort geändert", Toast.LENGTH_LONG).show();
-                        this.location.setName(name.getText().toString());
-                        this.setTextFields();
-                        this.dialog.dismiss();
-                    });
-        });
-        btnCancel.setOnClickListener(view -> this.dialog.dismiss());
     }
 
     public void addPv() {
@@ -380,90 +288,6 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.btnCancel.setOnClickListener(view -> this.dialog.dismiss());
     }
 
- /*   public void editConsumer(Device device) {
-        this.builder = new AlertDialog.Builder(this);
-        final View devicePopupView = getLayoutInflater().inflate(R.layout.popup_device, null);
-        this.deviceName = devicePopupView.findViewById(R.id.deviceName);
-        this.deviceName.setText(device.getName());
-        this.deviceId = devicePopupView.findViewById(R.id.deviceId);
-        this.deviceId.setText(device.getSerialNumber());
 
-        ArrayList<String> names = (ArrayList<String>) this.companies.stream().map(Company::getName).collect(toList());
-        this.typeNames = (ArrayList<String>) this.types.stream().map(PossibleDeviceType::getType).collect(toList());
-
-        Spinner deviceSpinner = devicePopupView.findViewById(R.id.deviceSpinner);
-        ArrayAdapter<String> adapterD = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, typeNames);
-        adapterD.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        deviceSpinner.setAdapter(adapterD);
-        deviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedType = types.get(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-
-        Spinner companySpinner = devicePopupView.findViewById(R.id.companySpinner);
-        ArrayAdapter<String> adapterC = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, names);
-        adapterC.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        companySpinner.setAdapter(adapterC);
-        companySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                types = companies.get(i).getDevices();
-                companyName = companies.get(i).getName();
-                selectedType = types.get(0);
-                typeNames.clear();
-                typeNames.addAll(types.stream().map(PossibleDeviceType::getType).collect(toList()));
-                adapterD.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-        ;
-        companySpinner.setSelection(adapterC.getPosition(device.getCompany()));
-
-        int pos = adapterD.getPosition(device.getPossibleDeviceType());
-        deviceSpinner.setSelection(pos);
-        this.selectedType = types.get(pos);
-
-        this.btnAdd = devicePopupView.findViewById(R.id.continueBtn);
-        this.btnCancel = devicePopupView.findViewById(R.id.backBtn);
-        this.builder.setView(devicePopupView);
-        this.dialog = this.builder.create();
-        this.dialog.show();
-
-        this.btnAdd.setOnClickListener(view -> {
-            Map<String, String> data = new HashMap<>();
-            data.put("locationID", this.locationID);
-            data.put("consumerType", this.selectedType.getType());
-            data.put("averageConsumption", "" + this.selectedType.getAverageConsumption() + "");
-            data.put("companyName", this.companyName);
-            data.put("consumerName", this.deviceName.getText().toString());
-            data.put("consumerSerial", this.deviceId.getText().toString());
-            data.put("email", User.getInstance().getFirebaseUser().getEmail());
-
-            device.setCompany(data.get("companyName"));
-            device.setAverageConsumption(Double.parseDouble(data.get("averageConsumption")));
-            device.setName(data.get("consumerName"));
-            device.setPossibleDeviceType(data.get("consumerType"));
-            device.setSerialNumber(data.get("consumerSerial"));
-
-            this.mFunctions
-                    .getHttpsCallable("updateConsumer")
-                    .call(data)
-                    .addOnSuccessListener(result -> {
-                        this.adapterDevices.notifyDataSetChanged();
-                    });
-            this.dialog.dismiss();
-        });
-        this.btnCancel.setOnClickListener(view -> this.dialog.dismiss());
-    }
-*/
 
 }
