@@ -1,19 +1,18 @@
 package com.example.smarthome;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.menu.MenuActivity;
@@ -23,25 +22,19 @@ import com.example.smarthome.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.function.Function;
 
 public class LoginActivity extends AppCompatActivity {
 
 
     private EditText emailEt, passwordEt;
+    private TextView loadingText;
     private ProgressBar progressBar;
-    private User user;
     private FirebaseAuth mAuth;
     private FirebaseFunctions mFunction;
     private Parser parser;
@@ -52,9 +45,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         this.parser = Parser.getInstance();
-        this.user = User.getInstance();
+        User user = User.getInstance();
         this.mAuth = FirebaseAuth.getInstance();
-        this.parser =Parser.getInstance();
+        this.parser = Parser.getInstance();
 
         this.emailEt = findViewById(R.id.email);
         this.passwordEt = findViewById(R.id.password);
@@ -63,19 +56,22 @@ public class LoginActivity extends AppCompatActivity {
         Button signupBtn = findViewById(R.id.signupBtn);
 
         this.progressBar = findViewById(R.id.progressBar);
+        this.loadingText = findViewById(R.id.loadingText);
 
         signupBtn.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
             startActivity(intent);
         });
         loginBtn.setOnClickListener(view -> loginUserAccount());
-
+        LinearLayout linearLayout = findViewById(R.id.loginLinearLayout);
         if (this.mAuth.getCurrentUser() != null) {
             if (this.mAuth.getCurrentUser().isEmailVerified()) {
 
-                this.user.setFirebaseUser(this.mAuth.getCurrentUser());
+                user.setFirebaseUser(this.mAuth.getCurrentUser());
                 //    this.user.getLoadingData().observe(this, )
                 this.progressBar.setVisibility(View.VISIBLE);
+                this.loadingText.setVisibility(View.VISIBLE);
+                linearLayout.setVisibility(View.GONE);
                 //neuer Versuch
               /*  new Thread(new Runnable() {
                     @Override
@@ -118,15 +114,46 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 //Alter Code, funktioniert
-                parser.callGetLocations();
+                /*Location test = new Location("z3SzhrJAEwqpBxLzlKrD", "test", 4220, "Testhausen", "At", new ArrayList<Device>(), new ArrayList<Producer>(), new Weather(), new ArrayList<Forecast>());
+                CountDownLatch countDownLatch = new CountDownLatch(20);
+                for (int i = 0; i < 20; i++) {
+                    parser.callGetGeneratorCallback(test, countDownLatch, null);
+                }
+                //loadData();
+
+//interessant, Problem: counDownLatch.await() hat den Hauptthread aufgehalten --> deshalb new Thread
+                new Thread(() -> {
+                    try {
+                        System.out.println("vorher");
+                        countDownLatch.await();
+                        System.out.println("fertig");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();*/
+
+                /*
                 parser.callCompanies();
                 finish();
                 Intent Main = new Intent(LoginActivity.this, MenuActivity.class);
                 startActivity(Main);
+                 */
+                loadData();
+
             } else {
                 Toast.makeText(LoginActivity.this, "Please verify your email.", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void loadData() {
+        parser.callCompanies();
+        parser.loadLocations(t -> {
+            Intent menu = new Intent(LoginActivity.this, MenuActivity.class);
+            startActivity(menu);
+            finish();
+            return 0;
+        });
     }
 
     private void loginUserAccount() {
@@ -151,15 +178,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (User.getInstance().getFirebaseUser().isEmailVerified()) {
                     Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_LONG).show();
                     progressBar.setVisibility(View.GONE);
-
-
-
-                    parser.callGetLocations();
-                    parser.callCompanies();
-                    finish();
-
-                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                    startActivity(intent);
+                    loadData();
                 } else {
                     Toast.makeText(LoginActivity.this, "Please verify your email.", Toast.LENGTH_LONG).show();
                 }
@@ -184,100 +203,37 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    private void loadData() {
-       /* new Thread(new Runnable() {
-            @Override
-            public void run() {
-                callGetLocations();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        parser.callCompanies();
-                    }
-                });
-            }
-        }); */
-        //Versuch 2
-        Executor executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                callGetLocations();
-
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        parser.callCompanies();
-                    }
-                });
-            }
-        });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void callGetLocations() {
-        Map<String, String> data = new HashMap<>();
-        data.put("email", User.getInstance().getFirebaseUser().getEmail());
-        this.mFunction.getHttpsCallable("getLocations")
-                .call(data)
-                .continueWith(task -> {
-                    try {
-                        JSONObject object = new JSONObject(task.getResult().getData().toString());
-                        JSONArray array = object.getJSONArray("Locations");
-                        parseGetLocations(array);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return task;
-                });
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void parseGetLocations(JSONArray array) {
         try {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject act = array.getJSONObject(i);
                 JSONObject object = act.getJSONObject("Location");
-                Location location = parser.parseLocation(object);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        parser.callGetWeather(location);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callNextParserPart(location);
-                            }
+                Location location = new Location();
+
+                location.setId(object.getString("locationID"));
+                location.setName(object.getString("name"));
+                location.setZip(object.getInt("zip"));
+                location.setCity(object.getString("city"));
+                location.setCountry(object.getString("country"));
+
+                parser.callGetGeneratorCallback(location, null, t1 -> {
+                    parser.callGetDevicesCallback(location, t2 -> {
+                        parser.callGetWeatherCallback(location, t3 -> {
+                            parser.callGetForecastCallback(location, t4 -> {
+                                User.getInstance().addLocation(location);
+                                return 0;
+                            });
+                            return 0;
                         });
-
-                    }
+                        return 0;
+                    });
+                    return 0;
                 });
-
-                this.user.getLocations().add(location);
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
-    private void callNextParserPart(Location location) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                parser.callGenerator(location);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        parser.callDevices(location);
-                    }
-                });
-            }
-        });
-    }
-
 
 }

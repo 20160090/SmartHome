@@ -1,11 +1,8 @@
 package com.example.smarthome.adding;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +19,6 @@ import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.json.JSONException;
@@ -123,7 +119,7 @@ public class AddingLocationActivity extends AppCompatActivity {
                     try {
                         object = new JSONObject(result.getData().toString());
                         this.location.setId(object.getString("locationID"));
-                        this.parser.callGetWeather(this.location);
+                        this.parser.callGetWeatherCallback(this.location,null);
                         callFunctionAddPV();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -143,7 +139,7 @@ public class AddingLocationActivity extends AppCompatActivity {
                 .call(data)
                 .addOnSuccessListener(result -> {
                     System.out.println(result.getData().toString());
-                    this.parser.callGenerator(this.location);
+                    this.parser.callGetGeneratorCallback(this.location,null,null);
                     this.progressBar.setVisibility(View.GONE);
                     Bundle bundle = new Bundle();
                     bundle.putString("locationID", this.location.getId());

@@ -2,12 +2,10 @@ package com.example.smarthome.model;
 
 import android.os.Build;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,9 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
 
@@ -32,6 +30,7 @@ public class Parser {
     private final User user;
     private final FirebaseFunctions mFunction;
     private static final Parser parser = new Parser();
+    private CountDownLatch countDownLatch;
 
     public Parser() {
         this.user = User.getInstance();
@@ -44,11 +43,68 @@ public class Parser {
 
 
     //region Location
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void callGetLocations() {
+
+    public void loadLocations(Function<Task, Object> callback) {
+        countDownLatch = new CountDownLatch(1000);
+        Map<String, String> data = new HashMap<>();
+        data.put("email", user.getFirebaseUser().getEmail());
+        Task callTask = this.mFunction.getHttpsCallable("getLocations")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    try {
+                        JSONArray array = new JSONObject(result.getData().toString()).getJSONArray("Locations");
+                        //pro location 4 tasks
+                        countDownLatch = new CountDownLatch(array.length() * 4);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject object = array.getJSONObject(i).getJSONObject("Location");
+                            Location location = new Location();
+
+                            location.setId(object.getString("locationID"));
+                            location.setName(object.getString("name"));
+                            location.setZip(object.getInt("zip"));
+                            location.setCity(object.getString("city"));
+                            location.setCountry(object.getString("country"));
+
+                            parser.callGetGeneratorCallback(location, countDownLatch, null);
+                            parser.callGetDevicesCallback(location, t -> {
+                                countDownLatch.countDown();
+                                return 0;
+                            });
+                            parser.callGetWeatherCallback(location, t -> {
+                                countDownLatch.countDown();
+                                return 0;
+                            });
+                            parser.callGetForecastCallback(location, t -> {
+                                countDownLatch.countDown();
+                                return 0;
+                            });
+                            user.addLocation(location);
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                });
+        new Thread(() -> {
+            try {
+                countDownLatch.await();
+                if (callback != null) {
+                    callTask.continueWith(result -> callback.apply(result));
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
+    }
+
+
+   /* public void callGetLocationsCallback(Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("email", User.getInstance().getFirebaseUser().getEmail());
-        this.mFunction.getHttpsCallable("getLocations")
+        Task callTask = this.mFunction.getHttpsCallable("getLocations")
                 .call(data)
                 .continueWith(task -> {
                     try {
@@ -61,8 +117,11 @@ public class Parser {
                     }
                     return task;
                 });
-    }
-
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
+    }*/
+/*
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void parseGetLocations(JSONArray array) {
         try {
@@ -70,12 +129,12 @@ public class Parser {
                 JSONObject act = array.getJSONObject(i);
                 JSONObject object = act.getJSONObject("Location");
                 Location location = this.parseLocation(object);
-                parseOneLocation(location);
+                callWeatherDeviceGenerator(location);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public Location parseLocation(JSONObject object) {
         Location location = new Location();
@@ -91,22 +150,38 @@ public class Parser {
         return location;
     }
 
-    public void parseOneLocation(Location location) {
-        callGetWeather(location);
-        callGetForecast(location);
-        callDevices(location);
-        callGenerator(location);
-        this.user.addLocation(location);
+    /*
+        public boolean callWeatherDeviceGenerator(Location location) {
+            callGetGeneratorCallback(location, t1 -> {
+                callGetWeatherCallback(location, t2 -> {
+                    callGetForecastCallback(location, t3 -> {
+                        callgetDevicesCallback(location, t4 -> {
+                            this.user.addLocation(location);
+                            return 0;
+                        });
+                        return 0;
+                    });
+                    return 0;
+                });
+                return 0;
+            });
+            return true;
+        }*/
+    public void callWeatherDeviceGenerator(Location location) {
+        callGetGeneratorCallback(location, null, null);
+        callGetDevicesCallback(location, null);
+        callGetForecastCallback(location, null);
+        callGetWeatherCallback(location, null);
     }
     //endregion
 
     //region Weather&Forecast
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void callGetWeather(Location location) {
+    public void callGetWeatherCallback(Location location, Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
         data.put("city", location.getCity());
-        this.mFunction.getHttpsCallable("getWeather")
+        Task callTask = this.mFunction.getHttpsCallable("getWeather")
                 .call(data)
                 .addOnSuccessListener(task -> {
                     try {
@@ -119,6 +194,9 @@ public class Parser {
                         location.setWeather(new Weather());
                     }
                 });
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -141,11 +219,11 @@ public class Parser {
         return weather;
     }
 
-    public void callGetForecast(Location location) {
+    public void callGetForecastCallback(Location location, Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
         data.put("city", location.getCity());
-        this.mFunction.getHttpsCallable("getForecast")
+        Task callTask = this.mFunction.getHttpsCallable("getForecast")
                 .call(data)
                 .addOnSuccessListener(task -> {
                     try {
@@ -157,6 +235,9 @@ public class Parser {
                         location.setWeather(new Weather());
                     }
                 });
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
 
     }
 
@@ -196,12 +277,12 @@ public class Parser {
 //endregion
 
     //region Devices
-    public void callDevices(Location location) {
+    public void callGetDevicesCallback(Location location, Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
         data.put("email", this.user.getFirebaseUser().getEmail());
 
-        this.mFunction
+        Task callTask = this.mFunction
                 .getHttpsCallable("getConsumers")
                 .call(data)
                 .addOnSuccessListener(task -> {
@@ -217,6 +298,9 @@ public class Parser {
                         e.printStackTrace();
                     }
                 });
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
     }
 
     public Device parseDevice(JSONObject object) {
@@ -245,12 +329,13 @@ public class Parser {
                 .call(data)
                 .addOnSuccessListener(result -> {
                     try {
+                        //TODO: leerzeichen Waschmasichine
                         JSONObject obj = new JSONObject(result.getData().toString());
                         JSONObject object = obj.getJSONArray("Consumers").getJSONObject(0);
                         device.setConsumption(object.getDouble("consumption"));
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        device.setConsumption(-1.0);
+                        device.setConsumption(0.0);
                     }
                 })
                 .addOnFailureListener(e -> e.printStackTrace());
@@ -258,11 +343,11 @@ public class Parser {
     //endregion
 
     //region Producer
-    public void callGenerator(Location location) {
+    public void callGetGeneratorCallback(Location location, CountDownLatch countDownLatch, Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("email", this.user.getFirebaseUser().getEmail());
         data.put("locationID", location.getId());
-        this.mFunction
+        Task callTask = this.mFunction
                 .getHttpsCallable("getGenerators")
                 .call(data)
                 .addOnSuccessListener(result -> {
@@ -274,10 +359,17 @@ public class Parser {
                             JSONObject act = obj.getJSONObject("Generator");
                             location.addProducer(this.parseProducer(act));
                         }
+                        if (countDownLatch != null) {
+                            countDownLatch.countDown();
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                });
+                })
+                .addOnFailureListener(e -> e.printStackTrace());
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
     }
 
     public Producer parseProducer(JSONObject object) {
@@ -295,13 +387,10 @@ public class Parser {
                             JSONObject object1 = new JSONObject(result.getData().toString());
                             JSONArray array = object1.getJSONArray("PVData");
                             JSONObject act = array.getJSONObject(3);
-                            try {
-                                producer.setCurrentlyProduced(act.getDouble("value"));
-                            } catch (JSONException e) {
-                                producer.setCurrentlyProduced(0.0);
-                            }
+
+                            producer.setCurrentlyProduced(act.getDouble("value"));
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            producer.setCurrentlyProduced(0.0);
                         }
                     });
         } catch (JSONException e) {
@@ -313,8 +402,12 @@ public class Parser {
 
     //region Companies
     public void callCompanies() {
+        callCompaniesCallback(null);
+    }
+
+    public void callCompaniesCallback(Function<Task, Object> callback) {
         FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
-        mFunctions
+        Task companiesTask = mFunctions
                 .getHttpsCallable("getPossibleCompanies")
                 .call()
                 .addOnCompleteListener(task -> {
@@ -329,6 +422,9 @@ public class Parser {
                         task.getException().printStackTrace();
                     }
                 });
+        if (callback != null) {
+            companiesTask.continueWith(result -> callback.apply(result));
+        }
     }
 
     public void parseCompanies(JSONArray array) {

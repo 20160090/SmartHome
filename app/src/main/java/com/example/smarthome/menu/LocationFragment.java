@@ -1,6 +1,5 @@
 package com.example.smarthome.menu;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -18,18 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.LocationDetailActivity;
-import com.example.smarthome.adding.AddingLocationActivity;
-import com.example.smarthome.model.Device;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
-import com.example.smarthome.model.Producer;
 import com.example.smarthome.model.User;
 import com.example.smarthome.R;
 import com.example.smarthome.model.Weather;
@@ -39,8 +33,6 @@ import com.google.firebase.functions.FirebaseFunctions;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +41,7 @@ public class LocationFragment extends Fragment {
     private Location location;
     private User user;
     private String locationID;
-    private int DELETED = 1;
+    private  Parser parser;
     private FirebaseFunctions mFunctions;
 
     public LocationFragment() {
@@ -77,6 +69,7 @@ public class LocationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         this.user = User.getInstance();
         this.mFunctions = FirebaseFunctions.getInstance();
+        this.parser = Parser.getInstance();
         readBundle(getArguments());
         //  Parser parser = new Parser();
         //  parser.parseOneLocation(location);
@@ -88,12 +81,29 @@ public class LocationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_location, container, false);
         view.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getActivity(), LocationDetailActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("locationID", this.locationID);
-            intent.putExtras(bundle);
-            startActivityForResult(intent, this.DELETED);
-            homeFragmentLocation();
+            HomeFragment homeFragment = ((HomeFragment) LocationFragment.this.getParentFragment());
+            homeFragment.loadingDetail();
+            parser.callGetGeneratorCallback(location,null, t1 -> {
+                parser.callGetDevicesCallback(location, t2 -> {
+                    parser.callGetWeatherCallback(location, t3 -> {
+                        parser.callGetForecastCallback(location, t4 -> {
+                            Intent intent = new Intent(getActivity(), LocationDetailActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("locationID", this.locationID);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                            homeFragmentLocation();
+                            return 0;
+                        });
+                        return 0;
+                    });
+                    return 0;
+                });
+                return 0;
+            });
+
+
+
         });
 
         Weather weather = this.location.getWeather();
@@ -245,15 +255,6 @@ public class LocationFragment extends Fragment {
         homeFragment.locations();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == DELETED) {
-            if (resultCode == Activity.RESULT_OK) {
-                homeFragmentLocation();
-            }
-        }
-    }
 
     public void editLocation() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

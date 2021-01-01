@@ -1,26 +1,19 @@
 package com.example.smarthome;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.smarthome.menu.DevicesRecyclerViewAdapter;
 import com.example.smarthome.menu.ProducerRecyclerViewAdapter;
@@ -128,7 +121,7 @@ public class LocationDetailActivity extends AppCompatActivity {
             Optional<Location> optLoc = locations.stream().filter(l -> l.getId().equals(locationID)).findFirst();
             optLoc.ifPresent(value -> {
                 this.location = value;
-                parser.callGenerator(this.location);
+                parser.callGetGeneratorCallback(this.location,null, null);
             });
         }
     }

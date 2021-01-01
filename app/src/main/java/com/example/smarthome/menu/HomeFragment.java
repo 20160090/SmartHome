@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ public class HomeFragment extends Fragment {
     private User user;
     private TextView noLocation;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
 
 
     public HomeFragment() {
@@ -49,6 +51,8 @@ public class HomeFragment extends Fragment {
         this.add = view.findViewById(R.id.addFAB);
         this.noLocation = view.findViewById(R.id.noLocation);
         this.swipeRefreshLayout = view.findViewById(R.id.swipeContainer);
+        this.progressBar = view.findViewById(R.id.homeProgressBar);
+        this.progressBar.setVisibility(View.GONE);
 
         MenuActivity menuActivity = (MenuActivity) getActivity();
         ViewPager2 viewPager2 = Objects.requireNonNull(menuActivity).getViewPager();
@@ -70,10 +74,15 @@ public class HomeFragment extends Fragment {
             intent.putExtras(bundle);
             startActivity(intent);
         });
+
         this.swipeRefreshLayout.setOnRefreshListener(() -> {
 
-            Parser.getInstance().callGetLocations();
-            locations();
+            Parser.getInstance().loadLocations(task -> {
+                locations();
+                swipeRefreshLayout.setRefreshing(false);
+                return task;
+            });
+            //locations();
         }
 
         );
@@ -111,7 +120,6 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < this.user.getLocations().size(); i++) {
             Location loc = this.user.getLocations().get(i);
-            Parser.getInstance().parseOneLocation(loc);
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             Fragment location = LocationFragment.newInstance(loc.getId());
             switch (i) {
@@ -139,7 +147,12 @@ public class HomeFragment extends Fragment {
         } else {
             this.noLocation.setVisibility(View.GONE);
         }
-        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void loadingDetail(){
+        this.progressBar.setVisibility(View.VISIBLE);
+        this.swipeRefreshLayout.setEnabled(false);
+        this.add.setEnabled(false);
     }
 
     @Override
