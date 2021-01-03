@@ -1,6 +1,7 @@
 package com.example.smarthome.menu;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.smarthome.LoginActivity;
 import com.example.smarthome.adding.AddingLocationActivity;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
@@ -32,6 +34,7 @@ public class HomeFragment extends Fragment {
     private TextView noLocation;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
+
 
 
     public HomeFragment() {
@@ -77,13 +80,15 @@ public class HomeFragment extends Fragment {
 
         this.swipeRefreshLayout.setOnRefreshListener(() -> {
 
-            Parser.getInstance().loadLocations(task -> {
-                locations();
-                swipeRefreshLayout.setRefreshing(false);
-                return task;
-            });
-            //locations();
-        }
+                    Parser parser = Parser.getInstance();
+                    parser.loadLocations(t -> {
+                        locations();
+                        swipeRefreshLayout.setRefreshing(false);
+                        return 0;
+                    });
+
+                    //locations();
+                }
 
         );
         return view;
@@ -149,10 +154,15 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void loadingDetail(){
+    public void loadingDetail() {
         this.progressBar.setVisibility(View.VISIBLE);
         this.swipeRefreshLayout.setEnabled(false);
         this.add.setEnabled(false);
+    }
+    public void endLoadingDetail(){
+        this.progressBar.setVisibility(View.GONE);
+        this.swipeRefreshLayout.setEnabled(true);
+        this.add.setEnabled(true);
     }
 
     @Override

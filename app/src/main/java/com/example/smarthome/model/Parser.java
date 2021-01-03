@@ -357,7 +357,7 @@ public class Parser {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             JSONObject act = obj.getJSONObject("Generator");
-                            location.addProducer(this.parseProducer(act));
+                           this.parseProducer(location,act);
                         }
                         if (countDownLatch != null) {
                             countDownLatch.countDown();
@@ -372,7 +372,7 @@ public class Parser {
         }
     }
 
-    public Producer parseProducer(JSONObject object) {
+    public Producer parseProducer(Location location, JSONObject object) {
         Producer producer = new Producer();
         try {
             producer.setId(object.getString("pvID"));
@@ -392,6 +392,7 @@ public class Parser {
                         } catch (JSONException e) {
                             producer.setCurrentlyProduced(0.0);
                         }
+                        location.addProducer(producer);
                     });
         } catch (JSONException e) {
             e.printStackTrace();

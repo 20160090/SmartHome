@@ -92,7 +92,8 @@ public class LocationFragment extends Fragment {
                             bundle.putString("locationID", this.locationID);
                             intent.putExtras(bundle);
                             startActivity(intent);
-                            homeFragmentLocation();
+                            homeFragment.endLoadingDetail();
+                            homeFragment.locations();
                             return 0;
                         });
                         return 0;

@@ -3,9 +3,11 @@ package com.example.smarthome;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,6 +47,7 @@ public class LocationDetailActivity extends AppCompatActivity {
     private FloatingActionButton add, addDevice, addProducer;
     private boolean isFABOpen;
     private String locationID, companyName;
+    private SwipeRefreshLayout refreshLayout;
 
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
@@ -58,6 +61,7 @@ public class LocationDetailActivity extends AppCompatActivity {
     private ArrayList<String> typeNames = new ArrayList<>();
     private ArrayList<PossibleDeviceType> types = new ArrayList<>();
     private ArrayList<Company> companies = new ArrayList<>();
+
 
 
     @SuppressLint("SetTextI18n")
@@ -78,17 +82,20 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.add = findViewById(R.id.addFAB);
         this.addDevice = findViewById(R.id.addDevice);
         this.addProducer = findViewById(R.id.addProducer);
+        this.refreshLayout = findViewById(R.id.swipeContainer);
 
         this.adapterDevices = new DevicesRecyclerViewAdapter(this, this.location.getDevices(), this.locationID);
         RecyclerView recyclerViewDevices = findViewById(R.id.deviceRV);
         recyclerViewDevices.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDevices.setHasFixedSize(true);
+        recyclerViewDevices.setNestedScrollingEnabled(false);
         recyclerViewDevices.setAdapter(this.adapterDevices);
 
         this.adapterProducer = new ProducerRecyclerViewAdapter(this, this.location.getProducers(), this.locationID);
         RecyclerView recyclerViewProducer = findViewById(R.id.producerRV);
         recyclerViewProducer.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewProducer.setHasFixedSize(true);
+        recyclerViewProducer.setNestedScrollingEnabled(false);
         recyclerViewProducer.setAdapter(this.adapterProducer);
 
         this.addDevice.setOnClickListener(view -> {
@@ -110,6 +117,22 @@ public class LocationDetailActivity extends AppCompatActivity {
                 closeFABMenu();
             }
         });
+        this.refreshLayout.setOnRefreshListener(() -> parser.callGetGeneratorCallback(location,null, t1 -> {
+            parser.callGetDevicesCallback(location, t2 -> {
+                parser.callGetWeatherCallback(location, t3 -> {
+                    parser.callGetForecastCallback(location, t4 -> {
+                        adapterDevices.notifyDataSetChanged();
+                        adapterProducer.notifyDataSetChanged();
+                        this.refreshLayout.setRefreshing(false);
+                        return 0;
+                    });
+                    return 0;
+                });
+                return 0;
+            });
+            return 0;
+        }));
+
         this.texts();
     }
 

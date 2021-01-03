@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.example.smarthome.model.Device.State.RUNNING;
 
@@ -23,11 +24,11 @@ public class Location {
         this.producers = new ArrayList<>();
         this.zip = 0;
         this.name = "unknown";
-        this.city="unknown";
+        this.city = "unknown";
         this.country = "unknown";
         this.weather = new Weather();
-        this.forecast =new ArrayList<>();
-        this.id="";
+        this.forecast = new ArrayList<>();
+        this.id = "";
     }
 
     public Location(String id, String name, int zip, String city, String country) {
@@ -39,7 +40,7 @@ public class Location {
         this.producers = new ArrayList<>();
         this.weather = new Weather();
         this.forecast = new ArrayList<>();
-        this.id=id;
+        this.id = id;
     }
 
     public Location(String id, String name, int zip, String city, String country, ArrayList<Device> devices, ArrayList<Producer> producers, Weather weather, ArrayList<Forecast> forecast) {
@@ -52,12 +53,28 @@ public class Location {
 
 
     public void addDevice(Device device) {
-        this.devices.add(device);
-        Collections.sort(devices);
+        Optional<Device> act = this.devices.stream().filter(d -> d.getSerialNumber().equals(device.getSerialNumber())).findFirst();
+        if(act.isPresent()){
+            Device actDevice = act.get();
+            actDevice.setName(device.getName());
+            actDevice.setCompany(device.getCompany());
+            actDevice.setPossibleDeviceType(device.getPossibleDeviceType());
+            actDevice.setAverageConsumption(device.getAverageConsumption());
+            actDevice.setState(device.getState());
+            actDevice.setId(device.getId());
+        }
+        else{
+            this.devices.add(device);
+        }
     }
 
     public void addProducer(Producer producer) {
-        if(!this.producers.stream().anyMatch(p -> p.getId().equals(producer.getId()))){
+        Optional<Producer> act = this.producers.stream().filter(p -> p.getId().equals(producer.getId())).findFirst();
+        if (act.isPresent()) {
+            act.get().setType(producer.getType());
+            act.get().setCurrentlyProduced(producer.getCurrentlyProduced());
+        }
+        else{
             this.producers.add(producer);
         }
 
@@ -131,8 +148,9 @@ public class Location {
         this.producers.clear();
         this.producers.addAll(producers);
     }
-    public String getZipString(){
-        return ""+this.zip+"";
+
+    public String getZipString() {
+        return "" + this.zip + "";
     }
 
     public Weather getWeather() {
@@ -159,7 +177,7 @@ public class Location {
         this.id = id;
     }
 
-    public String locationInfo(){
-        return this.name +" (ID: "+this.id+") \n"+this.getZipString()+" "+this.city+" \n"+this.country;
+    public String locationInfo() {
+        return this.name + " (ID: " + this.id + ") \n" + this.getZipString() + " " + this.city + " \n" + this.country;
     }
 }
