@@ -4,6 +4,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.smarthome.R;
+import com.github.pwittchen.weathericonview.WeatherIconView;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -14,6 +16,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -88,6 +91,7 @@ public class Parser {
                 });
         new Thread(() -> {
             try {
+
                 countDownLatch.await();
                 if (callback != null) {
                     callTask.continueWith(result -> callback.apply(result));
@@ -229,7 +233,10 @@ public class Parser {
                     try {
                         //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
                         JSONObject object = new JSONObject(task.getData().toString());
-                        location.setForecast(parseForecast(object.getJSONArray("forcast")));
+                        ArrayList<Forecast> forecast = new ArrayList<>();
+                        forecast.add(location.getWeather().getWeather());
+                        forecast.addAll(parseForecast(object.getJSONArray("forcast")));
+                        location.setForecast(forecast);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         location.setWeather(new Weather());
@@ -242,6 +249,7 @@ public class Parser {
     }
 
     public ArrayList<Forecast> parseForecast(JSONArray array) {
+
         ArrayList<Forecast> forecast = new ArrayList<>();
         try {
             for (int i = 0; i < array.length(); i++) {
@@ -273,6 +281,55 @@ public class Parser {
             e.printStackTrace();
         }
         return forecast;
+    }
+    public int weatherDescriptionIcon(LocalTime sunrise, LocalTime sunset, Forecast forecast){
+        if (sunrise.isBefore(forecast.getTime().toLocalTime()) && sunset.isAfter(forecast.getTime().toLocalTime())) {
+            switch (forecast.getDescription()) {
+                case "clear sky":
+                case "sunny":
+                    return R.string.wi_day_sunny;
+                case "scattered clouds":
+                case "overcast clouds":
+                case "broken clouds":
+                case "few clouds":
+                   return R.string.wi_day_cloudy;
+                case "clouds":
+                    return R.string.wi_cloud;
+                case "light rain":
+                    return R.string.wi_raindrops;
+                case "rain":
+                    return R.string.wi_day_rain;
+                case "fog":
+                    return R.string.wi_day_fog;
+                case "light snow":
+                    return R.string.wi_day_snow;
+                default:
+                    return R.string.wi_alien;
+            }
+        } else {
+            switch (forecast.getDescription()) {
+                case "clear sky":
+                case "sunny":
+                    return R.string.wi_night_clear;
+                case "scattered clouds":
+                case "overcast clouds":
+                case "broken clouds":
+                case "few clouds":
+                    return R.string.wi_night_alt_cloudy;
+                case "clouds":
+                    return R.string.wi_cloud;
+                case "light rain":
+                    return R.string.wi_raindrops;
+                case "rain":
+                    return R.string.wi_night_alt_rain;
+                case "fog":
+                    return R.string.wi_night_fog;
+                case "light snow":
+                    return R.string.wi_night_snow;
+                default:
+                    return R.string.wi_alien;
+            }
+        }
     }
 //endregion
 

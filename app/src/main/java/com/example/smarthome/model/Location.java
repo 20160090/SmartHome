@@ -166,6 +166,7 @@ public class Location {
     }
 
     public void setForecast(ArrayList<Forecast> forecast) {
+        Collections.reverse(forecast);
         this.forecast = forecast;
     }
 

@@ -42,7 +42,7 @@ dependencies {
     //    java.lang.IllegalArgumentException: Service not registered
     implementation 'com.google.firebase:firebase-bom:26.2.0'
 
-
+    implementation "androidx.cardview:cardview:1.0.0"
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'

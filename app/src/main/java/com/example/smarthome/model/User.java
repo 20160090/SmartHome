@@ -1,44 +1,9 @@
 package com.example.smarthome.model;
 
-import android.animation.Keyframe;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.service.autofill.Dataset;
-import android.view.View;
-
-import androidx.annotation.RequiresApi;
-
-import com.example.smarthome.LocationDetailActivity;
-import com.example.smarthome.adding.AddingLocationActivity;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.functions.FirebaseFunctions;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.HttpCookie;
-import java.sql.Array;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Optional;
-import java.util.TimeZone;
 
 public class User {
     private static final User user = new User();
@@ -112,6 +77,7 @@ public class User {
             loadingData.notify();
         });
     }
+
 }
 
 

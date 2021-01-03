@@ -1,5 +1,6 @@
 package com.example.smarthome;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,11 +20,13 @@ import android.widget.TextView;
 
 import com.example.smarthome.menu.DevicesRecyclerViewAdapter;
 import com.example.smarthome.menu.ProducerRecyclerViewAdapter;
+import com.example.smarthome.menu.WeatherRecyclerViewAdapter;
 import com.example.smarthome.model.Company;
 import com.example.smarthome.model.Device;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.PossibleDeviceType;
+import com.example.smarthome.model.SnapHelperOneByOne;
 import com.example.smarthome.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -56,12 +59,12 @@ public class LocationDetailActivity extends AppCompatActivity {
 
     private DevicesRecyclerViewAdapter adapterDevices;
     private ProducerRecyclerViewAdapter adapterProducer;
+    private WeatherRecyclerViewAdapter adapterWeather;
 
     private PossibleDeviceType selectedType;
     private ArrayList<String> typeNames = new ArrayList<>();
     private ArrayList<PossibleDeviceType> types = new ArrayList<>();
     private ArrayList<Company> companies = new ArrayList<>();
-
 
 
     @SuppressLint("SetTextI18n")
@@ -84,11 +87,23 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.addProducer = findViewById(R.id.addProducer);
         this.refreshLayout = findViewById(R.id.swipeContainer);
 
+        SnapHelperOneByOne snapHelper = new SnapHelperOneByOne();
+
+        this.adapterWeather = new WeatherRecyclerViewAdapter(this, this.location.getForecast(), this.locationID);
+        RecyclerView recyclerViewWeather = findViewById(R.id.weatherRV);
+        recyclerViewWeather.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        recyclerViewWeather.setHasFixedSize(true);
+        recyclerViewWeather.setNestedScrollingEnabled(true);
+        recyclerViewWeather.setAdapter(adapterWeather);
+        //Forecast in reverse order
+        recyclerViewWeather.scrollToPosition(location.getForecast().size()-1);
+        snapHelper.attachToRecyclerView(recyclerViewWeather);
+
         this.adapterDevices = new DevicesRecyclerViewAdapter(this, this.location.getDevices(), this.locationID);
         RecyclerView recyclerViewDevices = findViewById(R.id.deviceRV);
         recyclerViewDevices.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDevices.setHasFixedSize(true);
-        recyclerViewDevices.setNestedScrollingEnabled(false);
+        recyclerViewDevices.setNestedScrollingEnabled(true);
         recyclerViewDevices.setAdapter(this.adapterDevices);
 
         this.adapterProducer = new ProducerRecyclerViewAdapter(this, this.location.getProducers(), this.locationID);
@@ -117,12 +132,38 @@ public class LocationDetailActivity extends AppCompatActivity {
                 closeFABMenu();
             }
         });
-        this.refreshLayout.setOnRefreshListener(() -> parser.callGetGeneratorCallback(location,null, t1 -> {
-            parser.callGetDevicesCallback(location, t2 -> {
-                parser.callGetWeatherCallback(location, t3 -> {
-                    parser.callGetForecastCallback(location, t4 -> {
-                        adapterDevices.notifyDataSetChanged();
-                        adapterProducer.notifyDataSetChanged();
+
+        recyclerViewWeather.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
+        recyclerViewDevices.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (((LinearLayoutManager) recyclerViewDevices.getLayoutManager()).findFirstVisibleItemPosition() == 0) {
+                    refreshLayout.setEnabled(true);
+                } else {
+                    refreshLayout.setEnabled(false);
+                }
+            }
+        });
+
+        this.refreshLayout.setOnRefreshListener(() ->
+        this.parser.callGetGeneratorCallback(location, null, t1 -> {
+            this.parser.callGetDevicesCallback(location, t2 -> {
+                this.parser.callGetWeatherCallback(location, t3 -> {
+                    this.parser.callGetForecastCallback(location, t4 -> {
+                        this.adapterDevices.notifyDataSetChanged();
+                        this.adapterProducer.notifyDataSetChanged();
+                        this.adapterWeather.notifyDataSetChanged();
                         this.refreshLayout.setRefreshing(false);
                         return 0;
                     });
@@ -144,7 +185,7 @@ public class LocationDetailActivity extends AppCompatActivity {
             Optional<Location> optLoc = locations.stream().filter(l -> l.getId().equals(locationID)).findFirst();
             optLoc.ifPresent(value -> {
                 this.location = value;
-                parser.callGetGeneratorCallback(this.location,null, null);
+                parser.callGetGeneratorCallback(this.location, null, null);
             });
         }
     }
@@ -290,8 +331,8 @@ public class LocationDetailActivity extends AppCompatActivity {
                             JSONObject object = new JSONObject(task.getData().toString());
                             Device consumer = new Device(object.getString("consumerID"), data.get("consumerName"), this.selectedType.getType(), object.getString("state"), data.get("consumerSerial"), data.get("companyName"), this.selectedType.getAverageConsumption());
                             this.location.addDevice(consumer);
-                            Map<String, String> consumptionData= new HashMap<>();
-                            consumptionData.put("consumerType",consumer.getPossibleDeviceType());
+                            Map<String, String> consumptionData = new HashMap<>();
+                            consumptionData.put("consumerType", consumer.getPossibleDeviceType());
                             parser.callConsumerData(consumer.getPossibleDeviceType(), consumer);
                             this.adapterDevices.notifyDataSetChanged();
                             texts();
@@ -303,7 +344,6 @@ public class LocationDetailActivity extends AppCompatActivity {
         });
         this.btnCancel.setOnClickListener(view -> this.dialog.dismiss());
     }
-
 
 
 }

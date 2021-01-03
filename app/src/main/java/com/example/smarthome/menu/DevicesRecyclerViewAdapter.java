@@ -184,26 +184,6 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         return this.mValues.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mInfo, mConsumption;
-        public Device mItem;
-        public final ImageView mImg;
-
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mInfo = view.findViewById(R.id.info);
-            mConsumption = view.findViewById(R.id.consumption);
-            mImg = view.findViewById(R.id.imageView);
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mInfo.getText() + "'";
-        }
-    }
 
 
     public void editConsumer(Device device) {
@@ -302,4 +282,24 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     }
 
 
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public final View mView;
+        public final TextView mInfo, mConsumption;
+        public Device mItem;
+        public final ImageView mImg;
+
+        public ViewHolder(View view) {
+            super(view);
+            mView = view;
+            mInfo = view.findViewById(R.id.info);
+            mConsumption = view.findViewById(R.id.consumption);
+            mImg = view.findViewById(R.id.imageView);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return super.toString() + " '" + mInfo.getText() + "'";
+        }
+    }
 }

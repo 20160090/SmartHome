@@ -6,11 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +16,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+
 import com.example.smarthome.LocationDetailActivity;
+import com.example.smarthome.R;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
-import com.example.smarthome.R;
 import com.example.smarthome.model.Weather;
 import com.github.pwittchen.weathericonview.WeatherIconView;
 import com.google.firebase.functions.FirebaseFunctions;
-
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -109,17 +107,19 @@ public class LocationFragment extends Fragment {
 
         Weather weather = this.location.getWeather();
 
-        TextView descriptionTv, sunriseTv, sunsetTv, tempTv;
+        TextView descriptionTv, sunriseTv, sunsetTv, tempTv, timeTV;
         descriptionTv = view.findViewById(R.id.descriptionTv);
         sunriseTv = view.findViewById(R.id.sunriseTv);
         sunsetTv = view.findViewById(R.id.sunsetTv);
         tempTv = view.findViewById(R.id.tempTv);
+        timeTV = view.findViewById(R.id.actTime);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_TIME;
 
         descriptionTv.setText(weather.getWeather().getDescription());
         sunsetTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunset()));
         sunriseTv.setText(DateTimeFormatter.ISO_LOCAL_TIME.format(weather.getSunrise()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+        timeTV.setText(weather.getWeather().getTime().format(formatter));
         tempTv.setText("" + weather.getWeather().getTemp() + " °C");
 
         WeatherIconView descriptionIcon, sunriseIcon, sunsetIcon, tempIcon;
@@ -128,65 +128,11 @@ public class LocationFragment extends Fragment {
         sunsetIcon = view.findViewById(R.id.sunsetIcon);
         tempIcon = view.findViewById(R.id.tempIcon);
 
-        descriptionIcon.setIconSize(70);
+        descriptionIcon.setIconSize(65);
         descriptionIcon.setIconColor(Color.WHITE);
 
         LocalTime timeNow = LocalTime.now();
-        if (timeNow.isBefore(weather.getSunset()) && timeNow.isAfter(weather.getSunrise())) {
-            switch (this.location.getWeather().getWeather().getDescription()) {
-                case "clear sky":
-                case "sunny":
-                    descriptionIcon.setIconResource(getString(R.string.wi_day_sunny));
-                    break;
-                case "scadered clouds":
-                case "overcast clouds":
-                case "broken clouds":
-                case "few clouds":
-                    descriptionIcon.setIconResource(getString(R.string.wi_day_cloudy));
-                    break;
-                case "clouds":
-                    descriptionIcon.setIconResource(getString(R.string.wi_cloud));
-                    break;
-                case "light rain":
-                    descriptionIcon.setIconResource(getString(R.string.wi_raindrops));
-                case "rain":
-                    descriptionIcon.setIconResource(getString(R.string.wi_day_rain));
-                    break;
-                case "fog":
-                    descriptionIcon.setIconResource(getString(R.string.wi_day_fog));
-                    break;
-                case "light snow":
-                    descriptionIcon.setIconResource(getString(R.string.wi_day_snow));
-                default:
-                    descriptionIcon.setIconResource(getString(R.string.wi_alien));
-            }
-        } else {
-            switch (this.location.getWeather().getWeather().getDescription()) {
-                case "clear sky":
-                    descriptionIcon.setIconResource(getString(R.string.wi_night_clear));
-                case "scattered clouds":
-                case "overcast clouds":
-                case "broken clouds":
-                case "few clouds":
-                    descriptionIcon.setIconResource(getString(R.string.wi_night_alt_cloudy));
-                    break;
-                case "clouds":
-                    descriptionIcon.setIconResource(getString(R.string.wi_cloud));
-                    break;
-                case "light rain":
-                    descriptionIcon.setIconResource(getString(R.string.wi_raindrops));
-                case "rain":
-                    descriptionIcon.setIconResource(getString(R.string.wi_night_alt_rain));
-                    break;
-                case "fog":
-                    descriptionIcon.setIconResource(getString(R.string.wi_night_fog));
-                    break;
-                case "light snow":
-                    descriptionIcon.setIconResource(getString(R.string.wi_night_snow));
-                default:
-                    descriptionIcon.setIconResource(getString(R.string.wi_alien));
-            }
-        }
+        descriptionIcon.setIconResource(getString(this.parser.weatherDescriptionIcon(weather.getSunrise(), weather.getSunset(), weather.getWeather())));
         sunriseIcon.setIconSize(25);
         sunriseIcon.setIconResource(getString(R.string.wi_sunrise));
         sunriseIcon.setIconColor(Color.GRAY);
