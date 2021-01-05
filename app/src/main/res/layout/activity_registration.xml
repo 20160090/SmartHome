@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_weather"
         android:contentDescription="@string/show"
-        android:src="@drawable/common_google_signin_btn_icon_light_normal"
+        android:src="@drawable/ic_android_white_18dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/passwordConfirm"
         app:layout_constraintEnd_toEndOf="parent"
