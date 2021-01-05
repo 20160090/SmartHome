@@ -2,6 +2,7 @@ package com.example.smarthome;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Build;
@@ -10,7 +11,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +49,8 @@ public class LoginActivity extends AppCompatActivity {
         this.mAuth = FirebaseAuth.getInstance();
         this.parser = Parser.getInstance();
 
-        this.emailEt = findViewById(R.id.email);
-        this.passwordEt = findViewById(R.id.password);
+        this.emailEt = findViewById(R.id.etEmail);
+        this.passwordEt = findViewById(R.id.etPassword);
 
         Button loginBtn = findViewById(R.id.loginBtn);
         Button signupBtn = findViewById(R.id.signupBtn);
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
         loginBtn.setOnClickListener(view -> loginUserAccount());
-        LinearLayout linearLayout = findViewById(R.id.loginLinearLayout);
+        ConstraintLayout linearLayout = findViewById(R.id.loginLayout);
         if (this.mAuth.getCurrentUser() != null) {
             if (this.mAuth.getCurrentUser().isEmailVerified()) {
 

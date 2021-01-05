@@ -42,60 +42,15 @@ public class RegistrationActivity extends AppCompatActivity {
 
         this.mAuth = FirebaseAuth.getInstance();
 
-        this.emailEt = findViewById(R.id.email);
-        this.passwordEt = findViewById(R.id.password);
-        this.passwordConEt = findViewById(R.id.passwordConfirm);
+        this.emailEt = findViewById(R.id.etEmail);
+        this.passwordEt = findViewById(R.id.etPassword);
+        this.passwordConEt = findViewById(R.id.etPasswordConfirm);
         Button regBtn = findViewById(R.id.register);
-        FloatingActionButton showBtn = findViewById(R.id.showBtn);
-        FloatingActionButton showBtnCon = findViewById(R.id.showBtnCon);
-        showBtn.setOnTouchListener((view, motionEvent) -> {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_UP:
-                    passwordEt.setInputType(InputType.TYPE_CLASS_TEXT |InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    break;
-                case MotionEvent.ACTION_DOWN:
-                        passwordEt.setInputType(InputType.TYPE_CLASS_TEXT);
-                        break;
-            }
-            return true;
-        });
-        showBtnCon.setOnTouchListener((view, motionEvent) -> {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_UP:
-                    passwordConEt.setInputType(InputType.TYPE_CLASS_TEXT |InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    break;
-                case MotionEvent.ACTION_DOWN:
-                    passwordConEt.setInputType(InputType.TYPE_CLASS_TEXT);
-                    break;
-            }
-            return true;
-        });
 
         this.progressBar = findViewById(R.id.progressBar);
 
         regBtn.setOnClickListener(view -> registerUser());
 
-
-        /*showBtn.setOnTouchListener((view, motionEvent) -> {
-            if(motionEvent.getAction() == MotionEvent.ACTION_BUTTON_PRESS){
-             passwordEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            }
-            else{
-                passwordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            }
-
-            return false;
-        });
-        showBtnCon.setOnTouchListener((view, motionEvent) -> {
-            if(motionEvent.getAction() == MotionEvent.ACTION_BUTTON_PRESS){
-                passwordEt.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            }
-            else{
-                passwordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            }
-
-            return false;
-        });*/
     }
 
     @SuppressLint("ShowToast")
