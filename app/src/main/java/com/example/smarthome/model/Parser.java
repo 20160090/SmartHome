@@ -300,6 +300,7 @@ public class Parser {
                 case "rain":
                     return R.string.wi_day_rain;
                 case "fog":
+                case "mist":
                     return R.string.wi_day_fog;
                 case "light snow":
                     return R.string.wi_day_snow;
@@ -323,6 +324,7 @@ public class Parser {
                 case "rain":
                     return R.string.wi_night_alt_rain;
                 case "fog":
+                case "mist":
                     return R.string.wi_night_fog;
                 case "light snow":
                     return R.string.wi_night_snow;

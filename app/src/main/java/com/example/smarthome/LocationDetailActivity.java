@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -48,19 +49,21 @@ public class LocationDetailActivity extends AppCompatActivity {
     private FirebaseFunctions mFunctions;
 
     private FloatingActionButton add, addDevice, addProducer;
-    private boolean isFABOpen;
-    private String locationID, companyName;
+    private EditText pvId, deviceName, deviceId;
+    private Button btnCancel, btnAdd;
     private SwipeRefreshLayout refreshLayout;
+    private ProgressBar progressBar;
+
+    private boolean isFABOpen;
 
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
-    private EditText pvId, deviceName, deviceId;
-    private Button btnCancel, btnAdd;
 
     private DevicesRecyclerViewAdapter adapterDevices;
     private ProducerRecyclerViewAdapter adapterProducer;
     private WeatherRecyclerViewAdapter adapterWeather;
 
+    private String locationID, companyName;
     private PossibleDeviceType selectedType;
     private ArrayList<String> typeNames = new ArrayList<>();
     private ArrayList<PossibleDeviceType> types = new ArrayList<>();
@@ -72,6 +75,11 @@ public class LocationDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_detail);
+
+        this.typeNames = new ArrayList<>();
+        this.types = new ArrayList<>();
+        this.companies = new ArrayList<>();
+
         this.mFunctions = FirebaseFunctions.getInstance();
         this.parser = Parser.getInstance();
         this.user = User.getInstance();
@@ -86,6 +94,7 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.addDevice = findViewById(R.id.addDevice);
         this.addProducer = findViewById(R.id.addProducer);
         this.refreshLayout = findViewById(R.id.swipeContainer);
+        this.progressBar = findViewById(R.id.locDetailProgressBar);
 
         SnapHelperOneByOne snapHelper = new SnapHelperOneByOne();
 
@@ -93,17 +102,17 @@ public class LocationDetailActivity extends AppCompatActivity {
         RecyclerView recyclerViewWeather = findViewById(R.id.weatherRV);
         recyclerViewWeather.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
         recyclerViewWeather.setHasFixedSize(true);
-        recyclerViewWeather.setNestedScrollingEnabled(true);
+        recyclerViewWeather.setNestedScrollingEnabled(false);
         recyclerViewWeather.setAdapter(adapterWeather);
         //Forecast in reverse order
-        recyclerViewWeather.scrollToPosition(location.getForecast().size()-1);
+        recyclerViewWeather.scrollToPosition(location.getForecast().size() - 1);
         snapHelper.attachToRecyclerView(recyclerViewWeather);
 
         this.adapterDevices = new DevicesRecyclerViewAdapter(this, this.location.getDevices(), this.locationID);
         RecyclerView recyclerViewDevices = findViewById(R.id.deviceRV);
         recyclerViewDevices.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewDevices.setHasFixedSize(true);
-        recyclerViewDevices.setNestedScrollingEnabled(true);
+        recyclerViewDevices.setNestedScrollingEnabled(false);
         recyclerViewDevices.setAdapter(this.adapterDevices);
 
         this.adapterProducer = new ProducerRecyclerViewAdapter(this, this.location.getProducers(), this.locationID);
@@ -156,23 +165,27 @@ public class LocationDetailActivity extends AppCompatActivity {
             }
         });
 
+        this.refreshLayout.setColorSchemeColors(getColor(android.R.color.holo_blue_bright),
+                getColor(android.R.color.holo_green_light),
+                getColor(android.R.color.holo_orange_light),
+                getColor(android.R.color.holo_red_light));
         this.refreshLayout.setOnRefreshListener(() ->
-        this.parser.callGetGeneratorCallback(location, null, t1 -> {
-            this.parser.callGetDevicesCallback(location, t2 -> {
-                this.parser.callGetWeatherCallback(location, t3 -> {
-                    this.parser.callGetForecastCallback(location, t4 -> {
-                        this.adapterDevices.notifyDataSetChanged();
-                        this.adapterProducer.notifyDataSetChanged();
-                        this.adapterWeather.notifyDataSetChanged();
-                        this.refreshLayout.setRefreshing(false);
+                this.parser.callGetGeneratorCallback(location, null, t1 -> {
+                    this.parser.callGetDevicesCallback(location, t2 -> {
+                        this.parser.callGetWeatherCallback(location, t3 -> {
+                            this.parser.callGetForecastCallback(location, t4 -> {
+                                this.adapterDevices.notifyDataSetChanged();
+                                this.adapterProducer.notifyDataSetChanged();
+                                this.adapterWeather.notifyDataSetChanged();
+                                this.refreshLayout.setRefreshing(false);
+                                return 0;
+                            });
+                            return 0;
+                        });
                         return 0;
                     });
                     return 0;
-                });
-                return 0;
-            });
-            return 0;
-        }));
+                }));
 
         this.texts();
     }
@@ -262,8 +275,8 @@ public class LocationDetailActivity extends AppCompatActivity {
     }
 
     public void addDevice() {
-        this.builder = new AlertDialog.Builder(this);
         final View devicePopupView = getLayoutInflater().inflate(R.layout.popup_device, null);
+        this.builder = new AlertDialog.Builder(this);
         this.deviceName = devicePopupView.findViewById(R.id.deviceName);
         this.deviceId = devicePopupView.findViewById(R.id.deviceId);
 
@@ -314,6 +327,9 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.dialog.show();
 
         this.btnAdd.setOnClickListener(view -> {
+            this.loading();
+
+
             Map<String, String> data = new HashMap<>();
             data.put("locationID", this.locationID);
             data.put("consumerType", this.selectedType.getType());
@@ -335,7 +351,7 @@ public class LocationDetailActivity extends AppCompatActivity {
                             consumptionData.put("consumerType", consumer.getPossibleDeviceType());
                             parser.callConsumerData(consumer.getPossibleDeviceType(), consumer);
                             this.adapterDevices.notifyDataSetChanged();
-                            texts();
+                            endLoading();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -345,5 +361,15 @@ public class LocationDetailActivity extends AppCompatActivity {
         this.btnCancel.setOnClickListener(view -> this.dialog.dismiss());
     }
 
+    private void loading(){
+        this.progressBar.setVisibility(View.VISIBLE);
+        this.refreshLayout.setEnabled(false);
+    }
+    private void endLoading(){
+        this.progressBar.setVisibility(View.GONE);
+        this.refreshLayout.setEnabled(true);
+        texts();
+
+    }
 
 }

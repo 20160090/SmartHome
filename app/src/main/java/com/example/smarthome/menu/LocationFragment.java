@@ -39,8 +39,9 @@ public class LocationFragment extends Fragment {
     private Location location;
     private User user;
     private String locationID;
-    private  Parser parser;
+    private Parser parser;
     private FirebaseFunctions mFunctions;
+    private HomeFragment homeFragment;
 
     public LocationFragment() {
         // Required empty public constructor
@@ -68,6 +69,7 @@ public class LocationFragment extends Fragment {
         this.user = User.getInstance();
         this.mFunctions = FirebaseFunctions.getInstance();
         this.parser = Parser.getInstance();
+        this.homeFragment = ((HomeFragment) LocationFragment.this.getParentFragment());
         readBundle(getArguments());
         //  Parser parser = new Parser();
         //  parser.parseOneLocation(location);
@@ -79,9 +81,8 @@ public class LocationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_location, container, false);
         view.setOnClickListener(view1 -> {
-            HomeFragment homeFragment = ((HomeFragment) LocationFragment.this.getParentFragment());
             homeFragment.loadingDetail();
-            parser.callGetGeneratorCallback(location,null, t1 -> {
+            parser.callGetGeneratorCallback(location, null, t1 -> {
                 parser.callGetDevicesCallback(location, t2 -> {
                     parser.callGetWeatherCallback(location, t3 -> {
                         parser.callGetForecastCallback(location, t4 -> {
@@ -100,7 +101,6 @@ public class LocationFragment extends Fragment {
                 });
                 return 0;
             });
-
 
 
         });
@@ -171,8 +171,9 @@ public class LocationFragment extends Fragment {
                     case R.id.delete:
                         new AlertDialog.Builder(getContext())
                                 .setTitle(getResources().getString(R.string.remove_location))
-                                .setMessage(getResources().getString(R.string.really_delete_location))
+                                .setMessage(getResources().getString(R.string.really_delete_location) + location.getName() + getResources().getString(R.string.reallyRemove))
                                 .setPositiveButton(getResources().getString(R.string.yes), (dialogInterface, i) -> {
+                                    this.homeFragment.loadingDetail();
                                     Map<String, String> data = new HashMap<>();
                                     data.put("locationID", this.locationID);
                                     data.put("email", this.user.getFirebaseUser().getEmail());
@@ -181,6 +182,8 @@ public class LocationFragment extends Fragment {
                                             .call(data)
                                             .addOnSuccessListener(result -> {
                                                 this.user.getLocations().remove(location);
+                                                this.homeFragment.locations();
+                                                this.homeFragment.endLoadingDetail();
                                             });
                                 })
                                 .setNegativeButton(getResources().getString(R.string.no), null)
@@ -196,12 +199,6 @@ public class LocationFragment extends Fragment {
         });
         return view;
     }
-
-    private void homeFragmentLocation() {
-        HomeFragment homeFragment = ((HomeFragment) LocationFragment.this.getParentFragment());
-        homeFragment.locations();
-    }
-
 
     public void editLocation() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

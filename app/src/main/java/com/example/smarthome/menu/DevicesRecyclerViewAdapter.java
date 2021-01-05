@@ -130,8 +130,8 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                     case R.id.delete:
 
                         new AlertDialog.Builder(context)
-                                .setTitle(context.getResources().getString(R.string.remove_location))
-                                .setMessage(context.getResources().getString(R.string.really_delete_location))
+                                .setTitle(context.getResources().getString(R.string.removeDevice))
+                                .setMessage(context.getResources().getString(R.string.reallyRemoveDevice1)+device.getName()+context.getResources().getString(R.string.reallyRemove))
                                 .setPositiveButton(context.getResources().getString(R.string.yes), (dialogInterface, i) -> {
                                     data.clear();
                                     data.put("email", this.user.getFirebaseUser().getEmail());

@@ -85,6 +85,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
                                             Toast.makeText(RegistrationActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(RegistrationActivity.this, "Please verify your email!", Toast.LENGTH_LONG).show();
 
                                             this.progressBar.setVisibility(View.GONE);
                                             User.getInstance().setFirebaseUser(this.mAuth.getCurrentUser());
