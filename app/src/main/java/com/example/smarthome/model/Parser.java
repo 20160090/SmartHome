@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.example.smarthome.R;
 import com.github.pwittchen.weathericonview.WeatherIconView;
+import com.google.android.gms.common.util.JsonUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -105,26 +106,26 @@ public class Parser {
     }
 
 
-   /* public void callGetLocationsCallback(Function<Task, Object> callback) {
-        Map<String, String> data = new HashMap<>();
-        data.put("email", User.getInstance().getFirebaseUser().getEmail());
-        Task callTask = this.mFunction.getHttpsCallable("getLocations")
-                .call(data)
-                .continueWith(task -> {
-                    try {
-                        JSONObject object = new JSONObject(task.getResult().getData().toString());
-                        JSONArray array = object.getJSONArray("Locations");
-                        parseGetLocations(array);
+    /* public void callGetLocationsCallback(Function<Task, Object> callback) {
+         Map<String, String> data = new HashMap<>();
+         data.put("email", User.getInstance().getFirebaseUser().getEmail());
+         Task callTask = this.mFunction.getHttpsCallable("getLocations")
+                 .call(data)
+                 .continueWith(task -> {
+                     try {
+                         JSONObject object = new JSONObject(task.getResult().getData().toString());
+                         JSONArray array = object.getJSONArray("Locations");
+                         parseGetLocations(array);
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return task;
-                });
-        if (callback != null) {
-            callTask.continueWith(result -> callback.apply(result));
-        }
-    }*/
+                     } catch (JSONException e) {
+                         e.printStackTrace();
+                     }
+                     return task;
+                 });
+         if (callback != null) {
+             callTask.continueWith(result -> callback.apply(result));
+         }
+     }*/
 /*
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void parseGetLocations(JSONArray array) {
@@ -139,7 +140,6 @@ public class Parser {
             e.printStackTrace();
         }
     }*/
-
     public Location parseLocation(JSONObject object) {
         Location location = new Location();
         try {
@@ -150,6 +150,7 @@ public class Parser {
             location.setCountry(object.getString("country"));
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
         return location;
     }
@@ -184,17 +185,18 @@ public class Parser {
     public void callGetWeatherCallback(Location location, Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
-        data.put("city", location.getCity());
+        data.put("zip", location.getZipString());
         Task callTask = this.mFunction.getHttpsCallable("getWeather")
                 .call(data)
                 .addOnSuccessListener(task -> {
                     try {
                         //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
                         JSONObject object = new JSONObject(task.getData().toString());
-
                         location.setWeather(this.parseWeather(object));
+
                     } catch (JSONException e) {
                         e.printStackTrace();
+
                         location.setWeather(new Weather());
                     }
                 });
@@ -226,7 +228,7 @@ public class Parser {
     public void callGetForecastCallback(Location location, Function<Task, Object> callback) {
         Map<String, String> data = new HashMap<>();
         data.put("locationID", location.getId());
-        data.put("city", location.getCity());
+        data.put("zip", location.getZipString());
         Task callTask = this.mFunction.getHttpsCallable("getForecast")
                 .call(data)
                 .addOnSuccessListener(task -> {
@@ -282,7 +284,8 @@ public class Parser {
         }
         return forecast;
     }
-    public int weatherDescriptionIcon(LocalTime sunrise, LocalTime sunset, Forecast forecast){
+
+    public int weatherDescriptionIcon(LocalTime sunrise, LocalTime sunset, Forecast forecast) {
         if (sunrise.isBefore(forecast.getTime().toLocalTime()) && sunset.isAfter(forecast.getTime().toLocalTime())) {
             switch (forecast.getDescription()) {
                 case "clear sky":
@@ -292,7 +295,7 @@ public class Parser {
                 case "overcast clouds":
                 case "broken clouds":
                 case "few clouds":
-                   return R.string.wi_day_cloudy;
+                    return R.string.wi_day_cloudy;
                 case "clouds":
                     return R.string.wi_cloud;
                 case "light rain":
@@ -392,6 +395,7 @@ public class Parser {
                         JSONObject obj = new JSONObject(result.getData().toString());
                         JSONObject object = obj.getJSONArray("Consumers").getJSONObject(0);
                         device.setConsumption(object.getDouble("consumption"));
+                        device.switchState(object.getString("state"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                         device.setConsumption(0.0);
@@ -416,7 +420,7 @@ public class Parser {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             JSONObject act = obj.getJSONObject("Generator");
-                           this.parseProducer(location,act);
+                            this.parseProducer(location, act);
                         }
                         if (countDownLatch != null) {
                             countDownLatch.countDown();

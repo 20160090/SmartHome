@@ -34,6 +34,7 @@ public class AddingLocationActivity extends AppCompatActivity {
     private FirebaseFunctions mFunction;
     private final int LAUNCH_ADDING_ACTIVITY = 1;
     private ProgressBar progressBar;
+    private Button add;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -45,7 +46,7 @@ public class AddingLocationActivity extends AppCompatActivity {
         this.mFunction = FirebaseFunctions.getInstance();
 
 
-        Button con = findViewById(R.id.continueBtn);
+        this.add = findViewById(R.id.continueBtn);
         this.name = findViewById(R.id.nameEt);
         this.pvId = findViewById(R.id.pvEt);
         this.progressBar = findViewById(R.id.progressBar);
@@ -54,14 +55,15 @@ public class AddingLocationActivity extends AppCompatActivity {
         this.location = new Location();
 
 
-        con.setOnClickListener(view -> {
+        this.add.setOnClickListener(view -> {
             if (TextUtils.isEmpty(this.pvId.getText())) {
                 Toast.makeText(AddingLocationActivity.this, getResources().getString(R.string.fill_in_all), Toast.LENGTH_LONG).show();
             } else {
-                con.setClickable(false);
-                con.setBackgroundResource(R.drawable.rounded_btn_disabled);
+
+                this.add.setClickable(false);
+                this.add.setBackgroundResource(R.drawable.rounded_btn_disabled);
                 this.progressBar.setVisibility(View.VISIBLE);
-                callFronius();
+                callFroniusCallback();
             }
         });
     }
@@ -74,16 +76,22 @@ public class AddingLocationActivity extends AppCompatActivity {
 
     }
 
-    public Location parseLocation(JSONObject object) {
+    public boolean parseLocation(JSONObject object) {
+        Location location = this.parser.parseLocation(object);
+        if(location==null){
+            this.progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "ungültige Photovoltaik-ID", Toast.LENGTH_LONG);
+            return false;
+        }
         this.location = this.parser.parseLocation(object);
         if (!this.name.getText().toString().equals("")) {
             this.location.setName(this.name.getText().toString());
         }
-        return this.location;
+        return true;
     }
 
 
-    public void callFronius() {
+    public void callFroniusCallback() {
         Map<String, String> data = new HashMap<>();
         data.put("pvID", this.pvId.getText().toString());
         this.mFunction
@@ -93,14 +101,20 @@ public class AddingLocationActivity extends AppCompatActivity {
                     try {
                         //TODO: funktioniert nicht wenn error zurückgegeben
                         JSONObject object = new JSONObject(httpsCallableResult.getData().toString());
-                        System.out.println(object);
-                        parseLocation(object);
-                        callFunctionAddLocationData();
+                        if(parseLocation(object)){
+                            callFunctionAddLocationData();
+                        }
+                        else{
+                            Toast.makeText(this, "ungültige Photovoltaik-ID", Toast.LENGTH_SHORT).show();
+                            this.progressBar.setVisibility(View.GONE);
+                            this.add.setClickable(true);
+                            this.add.setBackgroundResource(R.drawable.round_add_button);
+                        }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        e.getMessage();
                     }
-                })
-                .addOnFailureListener(e -> e.printStackTrace());
+                });
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -138,18 +152,26 @@ public class AddingLocationActivity extends AppCompatActivity {
                 .getHttpsCallable("addPV")
                 .call(data)
                 .addOnSuccessListener(result -> {
-                    System.out.println(result.getData().toString());
-                    this.parser.callGetGeneratorCallback(this.location,null,null);
-                    this.progressBar.setVisibility(View.GONE);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("locationID", this.location.getId());
-                    bundle.putBoolean("adding", true);
-                    Intent intent = new Intent(AddingLocationActivity.this, LocationDetailActivity.class);
-                    intent.putExtras(bundle);
-                    this.user.addLocation(this.location);
-                    startActivityForResult(intent, LAUNCH_ADDING_ACTIVITY);
+                    this.parser.callGetGeneratorCallback(this.location,null,t->{
+                        this.parser.callGetWeatherCallback(this.location, t2->{
+                            this.parser.callGetForecastCallback(this.location, t3->{
+                                this.progressBar.setVisibility(View.GONE);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("locationID", this.location.getId());
+                                bundle.putBoolean("adding", true);
+                                Intent intent = new Intent(AddingLocationActivity.this, LocationDetailActivity.class);
+                                intent.putExtras(bundle);
+                                this.user.addLocation(this.location);
+                                startActivityForResult(intent, LAUNCH_ADDING_ACTIVITY);
+                                finish();
+                                return 0;
+                            });
+                            return 0;
+                        });
 
-                    finish();
+                        return 0;
+                    });
+
                 });
     }
 }
