@@ -1,5 +1,6 @@
 package com.example.smarthome;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -19,14 +20,20 @@ import com.example.smarthome.menu.MenuActivity;
 import com.example.smarthome.model.Location;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
@@ -38,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFunctions mFunction;
     private Parser parser;
+    private User user;
     private ConstraintLayout linearLayout;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -46,11 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         this.parser = Parser.getInstance();
-        User user = User.getInstance();
+        this.user = User.getInstance();
         this.mAuth = FirebaseAuth.getInstance();
         this.parser = Parser.getInstance();
 
-        this.linearLayout  = findViewById(R.id.loginLayout);
+        this.linearLayout = findViewById(R.id.loginLayout);
         this.emailEt = findViewById(R.id.etEmail);
         this.passwordEt = findViewById(R.id.etPassword);
 
@@ -68,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         if (this.mAuth.getCurrentUser() != null) {
             if (this.mAuth.getCurrentUser().isEmailVerified()) {
 
-                user.setFirebaseUser(this.mAuth.getCurrentUser());
+                this.user.setFirebaseUser(this.mAuth.getCurrentUser());
 
                 this.progressBar.setVisibility(View.VISIBLE);
                 this.loadingText.setVisibility(View.VISIBLE);
@@ -85,9 +93,12 @@ public class LoginActivity extends AppCompatActivity {
     private void loadData() {
         this.parser.callCompanies();
         this.parser.loadLocations(t -> {
+
             Intent menu = new Intent(LoginActivity.this, MenuActivity.class);
             startActivity(menu);
             finish();
+
+
             return 0;
         });
     }

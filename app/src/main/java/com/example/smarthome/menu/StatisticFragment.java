@@ -1,7 +1,10 @@
 
 package com.example.smarthome.menu;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,17 +12,31 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.smarthome.R;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class StatisticFragment extends Fragment {
 
@@ -43,68 +60,102 @@ public class StatisticFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_statistic, container, false);
-        BarChart chart = view.findViewById(R.id.chart);
-
+        LineChart chart = view.findViewById(R.id.chart);
+        ArrayList<String> xValues = new ArrayList();
+        for (int i = 0; i < 11; i++) {
+            xValues.add(LocalDate.now().minusDays(i).toString());
+        }
         Description description = new Description();
-        description.setText("Test Chart");
-        BarData data = new BarData(getDataSet());
-        chart.setData(data);
+        description.setText("TESTTTT");
+        chart.setData(getData());
+        chart.getXAxis().setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                return xValues.get((int) value);
+            }
+        });
         chart.setDescription(description);
+        chart.getRenderer().getPaintRender().setShader(new LinearGradient(0,1000,0f,1000f, Color.RED, Color.GREEN, Shader.TileMode.MIRROR));
         chart.animateXY(2000, 2000);
         chart.invalidate();
         return view;
     }
 
-    private ArrayList getDataSet() {
-        ArrayList dataSets = null;
+    private LineData getData() {
+        ArrayList yValues = new ArrayList();
 
-        ArrayList valueSet1 = new ArrayList();
-        BarEntry v1e1 = new BarEntry(110.000f, 0); // Jan
-        valueSet1.add(v1e1);
-        BarEntry v1e2 = new BarEntry(40.000f, 1); // Feb
-        valueSet1.add(v1e2);
-        BarEntry v1e3 = new BarEntry(60.000f, 2); // Mar
-        valueSet1.add(v1e3);
-        BarEntry v1e4 = new BarEntry(30.000f, 3); // Apr
-        valueSet1.add(v1e4);
-        BarEntry v1e5 = new BarEntry(90.000f, 4); // May
-        valueSet1.add(v1e5);
-        BarEntry v1e6 = new BarEntry(100.000f, 5); // Jun
-        valueSet1.add(v1e6);
+        yValues.add(new Entry(0, 55f));
+        yValues.add(new Entry(1, -20f));
+        yValues.add(new Entry(2, 520f));
+        yValues.add(new Entry(3, 800f));
+        yValues.add(new Entry(4, 425f));
+        yValues.add(new Entry(5, -220));
+        yValues.add(new Entry(6, 530f));
+        yValues.add(new Entry(7, 750f));
+        yValues.add(new Entry(8, -220));
+        yValues.add(new Entry(9, -1000f));
+        yValues.add(new Entry(10, 725f));
 
-        ArrayList valueSet2 = new ArrayList();
-        BarEntry v2e1 = new BarEntry(150.000f, 0); // Jan
-        valueSet2.add(v2e1);
-        BarEntry v2e2 = new BarEntry(90.000f, 1); // Feb
-        valueSet2.add(v2e2);
-        BarEntry v2e3 = new BarEntry(120.000f, 2); // Mar
-        valueSet2.add(v2e3);
-        BarEntry v2e4 = new BarEntry(60.000f, 3); // Apr
-        valueSet2.add(v2e4);
-        BarEntry v2e5 = new BarEntry(20.000f, 4); // May
-        valueSet2.add(v2e5);
-        BarEntry v2e6 = new BarEntry(80.000f, 5); // Jun
-        valueSet2.add(v2e6);
 
-        BarDataSet barDataSet1 = new BarDataSet(valueSet1, "Brand 1");
-        barDataSet1.setColor(Color.rgb(0, 155, 0));
-        BarDataSet barDataSet2 = new BarDataSet(valueSet2, "Brand 2");
-        barDataSet2.setColors(ColorTemplate.COLORFUL_COLORS);
-
-        dataSets = new ArrayList();
-        dataSets.add(barDataSet1);
-        dataSets.add(barDataSet2);
-        return dataSets;
+        LineDataSet lineDataSet = new LineDataSet(yValues,"kW");
+        lineDataSet.setColor(R.color.colorAccentTransparent);
+        lineDataSet.setMode(LineDataSet.Mode.LINEAR);
+        lineDataSet.setLineWidth(1.75f);
+        lineDataSet.setCircleRadius(3f);
+        lineDataSet.setDrawFilled(true);
+        LineData lineData = new LineData();
+        lineData.addDataSet(lineDataSet);
+        return lineData;
     }
 
-    private ArrayList getXAxisValues() {
-        ArrayList xAxis = new ArrayList();
-        xAxis.add("JAN");
-        xAxis.add("FEB");
-        xAxis.add("MAR");
-        xAxis.add("APR");
-        xAxis.add("MAY");
-        xAxis.add("JUN");
-        return xAxis;
+    private LineData splitDataPosNeg(ArrayList<BarEntry> entries) {
+        boolean isPos = false;
+        LineData lineData = new LineData();
+        ArrayList<Entry> actEntries = new ArrayList<>();
+        actEntries.add(entries.get(0));
+        if (entries.get(0).getY() > 0) {
+            isPos = true;
+        }
+        for (Entry act : entries) {
+            if (act.getY() > 0) {
+                if (isPos) {
+                    actEntries.add(act);
+                } else {
+                    isPos=true;
+                    LineDataSet lineDataSet = new LineDataSet(actEntries, "neg");
+                    lineDataSet.setFillColor(R.color.colorAccentTransparent);
+                    lineDataSet.setLineWidth(1.75f);
+                    lineDataSet.setCircleRadius(3f);
+
+                    lineData.addDataSet(lineDataSet);
+                    actEntries = new ArrayList<>();
+                    actEntries.add(act);
+                }
+            }
+            else{
+                if(!isPos){
+                    actEntries.add(act);
+                }
+                else{
+                    isPos=false;
+                    LineDataSet lineDataSet = new LineDataSet(actEntries, "pos");
+                    lineDataSet.setFillColor(R.color.colorAccent);
+                    lineDataSet.setLineWidth(1.75f);
+                    lineDataSet.setCircleRadius(3f);
+
+                    lineData.addDataSet(lineDataSet);
+                    actEntries = new ArrayList<>();
+                    actEntries.add(act);
+                }
+            }
+
+        }
+        return lineData;
+
     }
+
+    private boolean getSign(Entry entry) {
+        return entry.getY() > 0;
+    }
+
 }

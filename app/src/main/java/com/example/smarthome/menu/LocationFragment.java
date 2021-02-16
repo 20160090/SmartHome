@@ -149,7 +149,10 @@ public class LocationFragment extends Fragment {
         final TextView locationName = view.findViewById(R.id.houseTv);
         TextView devices = view.findViewById(R.id.devicesTv);
         TextView producers = view.findViewById(R.id.producerTv);
+        TextView consumption = view.findViewById(R.id.consumptionTv);
         final ConstraintLayout cl = view.findViewById(R.id.locationFragmentCL);
+
+
 
         locationName.setText(this.location.getName());
         if (this.location.getRunningNum() == 1) {

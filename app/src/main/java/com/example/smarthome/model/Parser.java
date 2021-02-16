@@ -5,8 +5,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.example.smarthome.R;
-import com.github.pwittchen.weathericonview.WeatherIconView;
-import com.google.android.gms.common.util.JsonUtils;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -92,7 +90,6 @@ public class Parser {
                 });
         new Thread(() -> {
             try {
-
                 countDownLatch.await();
                 if (callback != null) {
                     callTask.continueWith(result -> callback.apply(result));
@@ -105,6 +102,14 @@ public class Parser {
 
     }
 
+    public void parseConsumptions(JSONArray array) throws JSONException {
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            String id = obj.getString("locationID");
+            Location location = user.getLocations().stream().filter(l -> l.getId().equals(id)).findFirst().get();
+            location.setConsumption((obj.getDouble("produce")-obj.getDouble("consume")));
+        }
+    }
 
     /* public void callGetLocationsCallback(Function<Task, Object> callback) {
          Map<String, String> data = new HashMap<>();
@@ -250,6 +255,7 @@ public class Parser {
 
     }
 
+
     public ArrayList<Forecast> parseForecast(JSONArray array) {
 
         ArrayList<Forecast> forecast = new ArrayList<>();
@@ -305,6 +311,7 @@ public class Parser {
                 case "fog":
                 case "mist":
                     return R.string.wi_day_fog;
+                case "snow":
                 case "light snow":
                     return R.string.wi_day_snow;
                 default:
@@ -329,6 +336,7 @@ public class Parser {
                 case "fog":
                 case "mist":
                     return R.string.wi_night_fog;
+                case "snow":
                 case "light snow":
                     return R.string.wi_night_snow;
                 default:
@@ -533,6 +541,32 @@ public class Parser {
             e.printStackTrace();
         }
         return types;
+    }
+
+    //endregion
+    //region general
+    public void callGetConsumptionCallback(Location location, Function<Task, Object> callback) {
+        Map<String, String> data = new HashMap<>();
+        data.put("emial", user.getFirebaseUser().getEmail());
+        Task callTask = this.mFunction.getHttpsCallable("getForecast")
+                .call(data)
+                .addOnSuccessListener(task -> {
+                    try {
+                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
+                        JSONObject object = new JSONObject(task.getData().toString());
+                        ArrayList<Forecast> forecast = new ArrayList<>();
+                        forecast.add(location.getWeather().getWeather());
+                        forecast.addAll(parseForecast(object.getJSONArray("forcast")));
+                        location.setForecast(forecast);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        location.setWeather(new Weather());
+                    }
+                });
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
+
     }
     //endregion
 }

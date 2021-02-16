@@ -36,6 +36,7 @@
         </activity>
         <activity android:name=".menu.MenuActivity" />
         <activity android:name=".RegistrationActivity" />
+
     </application>
 
 </manifest>

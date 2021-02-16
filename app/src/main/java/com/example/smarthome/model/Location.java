@@ -18,6 +18,7 @@ public class Location {
     private Weather weather;
     private ArrayList<Forecast> forecast;
     private String id;
+    private double consumption;
 
     public Location() {
         this.devices = new ArrayList<>();
@@ -29,6 +30,7 @@ public class Location {
         this.weather = new Weather();
         this.forecast = new ArrayList<>();
         this.id = "";
+        this.consumption =0.0;
     }
 
     public Location(String id, String name, int zip, String city, String country) {
@@ -176,6 +178,14 @@ public class Location {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public double getConsumption() {
+        return this.consumption;
+    }
+
+    public void setConsumption(double consumption) {
+        this.consumption = consumption;
     }
 
     public String locationInfo() {

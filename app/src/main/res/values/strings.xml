@@ -66,6 +66,7 @@
     <string name="reallyRemove">\' wirklich löschen?</string>
     <string name="sie_werden_angemeldet">Sie werden angemeldet</string>
     <string name="contentDescription">contentDescription</string>
+    <string name="verbrauch">Verbrauch:</string>
 
 
 </resources>
