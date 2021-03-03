@@ -49,25 +49,7 @@ public class MenuActivity extends AppCompatActivity {
             tab.setText(TAB_TITLES[position]);
             this.viewPager.setCurrentItem(1, false);
         }).attach();
-        Map<String, String> data1 = new HashMap<>();
-        data1.put("email", user.getFirebaseUser().getEmail());
-        this.mFunction.getHttpsCallable("getLocationData")
-                .call(data1)
-                .addOnSuccessListener(result -> {
-                    try {
-                        Parser.getInstance().parseConsumptions(new JSONArray(result.getData().toString()));
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                })
-                .addOnFailureListener(e -> {
-                    e.printStackTrace();
-                })
-                .addOnCompleteListener(task -> {
-                    task.getResult().getData();
-                });
 
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {

@@ -55,8 +55,8 @@ public class Parser {
                 .addOnSuccessListener(result -> {
                     try {
                         JSONArray array = new JSONObject(result.getData().toString()).getJSONArray("Locations");
-                        //pro location 4 tasks
-                        countDownLatch = new CountDownLatch(array.length() * 4);
+                        //pro location 5 tasks
+                        countDownLatch = new CountDownLatch(array.length() * 5);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject object = array.getJSONObject(i).getJSONObject("Location");
                             Location location = new Location();
@@ -77,6 +77,10 @@ public class Parser {
                                 return 0;
                             });
                             parser.callGetForecastCallback(location, t -> {
+                                countDownLatch.countDown();
+                                return 0;
+                            });
+                            parser.callGetConsumptionCallback(location, t->{
                                 countDownLatch.countDown();
                                 return 0;
                             });
@@ -102,14 +106,6 @@ public class Parser {
 
     }
 
-    public void parseConsumptions(JSONArray array) throws JSONException {
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject obj = array.getJSONObject(i);
-            String id = obj.getString("locationID");
-            Location location = user.getLocations().stream().filter(l -> l.getId().equals(id)).findFirst().get();
-            location.setConsumption((obj.getDouble("produce")-obj.getDouble("consume")));
-        }
-    }
 
     /* public void callGetLocationsCallback(Function<Task, Object> callback) {
          Map<String, String> data = new HashMap<>();
@@ -159,30 +155,29 @@ public class Parser {
         }
         return location;
     }
+    public void callGetConsumptionCallback(Location location, Function<Task, Object> callback) {
+        Map<String, String> data = new HashMap<>();
+        data.put("locationID", location.getId());
+        data.put("email", user.getFirebaseUser().getEmail());
+        Task callTask = this.mFunction.getHttpsCallable("getLocationData")
+                .call(data)
+                .addOnSuccessListener(task -> {
+                    try {
+                        JSONArray arr = new JSONArray(task.getData().toString());
+                        JSONObject object = arr.getJSONObject(0);
+                        location.setConsumption(object.getDouble("produce")-object.getDouble("consume"));
 
-    /*
-        public boolean callWeatherDeviceGenerator(Location location) {
-            callGetGeneratorCallback(location, t1 -> {
-                callGetWeatherCallback(location, t2 -> {
-                    callGetForecastCallback(location, t3 -> {
-                        callgetDevicesCallback(location, t4 -> {
-                            this.user.addLocation(location);
-                            return 0;
-                        });
-                        return 0;
-                    });
-                    return 0;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+
+                        location.setWeather(new Weather());
+                    }
                 });
-                return 0;
-            });
-            return true;
-        }*/
-    public void callWeatherDeviceGenerator(Location location) {
-        callGetGeneratorCallback(location, null, null);
-        callGetDevicesCallback(location, null);
-        callGetForecastCallback(location, null);
-        callGetWeatherCallback(location, null);
+        if (callback != null) {
+            callTask.continueWith(result -> callback.apply(result));
+        }
     }
+
     //endregion
 
     //region Weather&Forecast
@@ -195,7 +190,6 @@ public class Parser {
                 .call(data)
                 .addOnSuccessListener(task -> {
                     try {
-                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
                         JSONObject object = new JSONObject(task.getData().toString());
                         location.setWeather(this.parseWeather(object));
 
@@ -543,30 +537,5 @@ public class Parser {
         return types;
     }
 
-    //endregion
-    //region general
-    public void callGetConsumptionCallback(Location location, Function<Task, Object> callback) {
-        Map<String, String> data = new HashMap<>();
-        data.put("emial", user.getFirebaseUser().getEmail());
-        Task callTask = this.mFunction.getHttpsCallable("getForecast")
-                .call(data)
-                .addOnSuccessListener(task -> {
-                    try {
-                        //TODO: unterminated object at character 15 of {Error=Cannot read property '0' of undefined}
-                        JSONObject object = new JSONObject(task.getData().toString());
-                        ArrayList<Forecast> forecast = new ArrayList<>();
-                        forecast.add(location.getWeather().getWeather());
-                        forecast.addAll(parseForecast(object.getJSONArray("forcast")));
-                        location.setForecast(forecast);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        location.setWeather(new Weather());
-                    }
-                });
-        if (callback != null) {
-            callTask.continueWith(result -> callback.apply(result));
-        }
-
-    }
     //endregion
 }

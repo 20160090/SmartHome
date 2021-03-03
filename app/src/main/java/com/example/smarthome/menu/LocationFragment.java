@@ -160,7 +160,7 @@ public class LocationFragment extends Fragment {
         } else {
             devices.setText(this.location.getRunningNum() + " Geräte laufen");
         }
-
+        consumption.setText(this.location.getConsumption()+" W");
         producers.setText("Momentan erzeugte Watt:  " + this.location.getCurrentEnergy() + " W");
         cl.setOnLongClickListener(view12 -> {
 
