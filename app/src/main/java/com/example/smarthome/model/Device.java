@@ -68,7 +68,7 @@ public class Device implements Comparable<Device> {
     }
 
     public Device(Device device) {
-        this(device.getId(), device.getName(), device.getPossibleDeviceType(), device.getState(), device.getSerialNumber(), device.getCompany(), device.getAverageConsumption());
+        this(device.getId(), device.getName(), device.getPossibleDeviceType(), device.getState(), device.getSerialNumber(), device.getCompany(), device.getAverageConsumption(), device.getConsumption());
     }
 
     public Device(String id, String name, String possibleDeviceType, State state, String serialNumber, String company, Double averageConsumption) {
@@ -80,7 +80,16 @@ public class Device implements Comparable<Device> {
         this.company = company;
         this.averageConsumption = averageConsumption;
     }
-
+    public Device(String id, String name, String possibleDeviceType, State state, String serialNumber, String company, Double averageConsumption, Double consumption) {
+        this.id = id;
+        this.name = name;
+        this.serialNumber = serialNumber;
+        this.possibleDeviceType = possibleDeviceType;
+        this.state = state;
+        this.company = company;
+        this.averageConsumption = averageConsumption;
+        this.consumption = consumption;
+    }
     public Device(String id, String name, String possibleDeviceType, String state, String serialNumber, String company, Double averageConsumption) {
 
         this.id = id;

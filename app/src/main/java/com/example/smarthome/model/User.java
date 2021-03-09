@@ -1,6 +1,7 @@
 package com.example.smarthome.model;
 
 import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Optional;
@@ -10,12 +11,10 @@ public class User {
     private FirebaseUser firebaseUser;
     private ArrayList<Location> locations;
     private ArrayList<Company> companies;
-    private Observable loadingData;
 
     public User() {
         this.locations = new ArrayList<>();
         this.companies = new ArrayList<>();
-        loadingData = new Observable();
     }
 
     public static User getInstance() {
@@ -41,21 +40,14 @@ public class User {
     public ArrayList<Company> getCompanies() {
         return this.companies;
     }
+
     public void setCompanies(ArrayList<Company> companies) {
         this.companies = companies;
     }
 
-    public Observable getLoadingData() {
-        return loadingData;
-    }
-
-    public void setLoadingData(Observable loadingData) {
-        this.loadingData = loadingData;
-    }
-
-    public void addLocation(Location location){
+    public void addLocation(Location location) {
         Optional<Location> old = this.locations.stream().filter(l -> l.getId().equals(location.getId())).findAny();
-        if(old.isPresent()){
+        if (old.isPresent()) {
             old.get().setProducers(location.getProducers());
             old.get().setDevices(location.getDevices());
             old.get().setWeather(location.getWeather());
@@ -64,19 +56,11 @@ public class User {
             old.get().setCountry(location.getCountry());
             old.get().setForecast(location.getForecast());
             old.get().setZip(location.getZip());
-        }
-        else{
+        } else {
             this.locations.add(location);
         }
     }
-    public void loadingAll(){
-       TaskRunner taskRunner = new TaskRunner();
-        taskRunner.executeAsync(new LoadingAll(firebaseUser.getEmail()), (data) ->{
 
-            locations=data;
-            loadingData.notify();
-        });
-    }
 
 }
 
