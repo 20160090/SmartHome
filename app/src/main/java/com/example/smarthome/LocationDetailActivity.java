@@ -231,14 +231,8 @@ public class LocationDetailActivity extends AppCompatActivity {
     }
 
     public void texts() {
-        TextView producerTv = findViewById(R.id.noProducerTv);
         TextView devicesTv = findViewById(R.id.noDevicesTv);
 
-        if (this.location.getProducers().isEmpty()) {
-            producerTv.setVisibility(View.VISIBLE);
-        } else {
-            producerTv.setVisibility(View.GONE);
-        }
         if (this.location.getDevices().isEmpty()) {
             devicesTv.setVisibility(View.VISIBLE);
         } else {
