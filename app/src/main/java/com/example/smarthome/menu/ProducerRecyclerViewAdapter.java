@@ -60,18 +60,18 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
         holder.mInfo.setText(mValues.get(position).getType());
         holder.mWH.setText("" + mValues.get(position).getCurrentlyProduced() + "" + "W");
 
-        holder.itemView.setOnClickListener(view -> {
+     /*   holder.itemView.setOnClickListener(view -> {
             final Producer producer = mValues.get(position);
             PopupMenu popupMenu = new PopupMenu(view.getContext(), holder.mInfo);
             popupMenu.inflate(R.menu.producer_menu);
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 switch (menuItem.getItemId()) {
-                   /* case R.id.edit:
+                    case R.id.edit:
                         this.mValues.set(position, producer);
                         notifyItemChanged(position);
-                        break;*/
+                        break;
                     case R.id.delete:
-                      /*  FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+                       FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
                         Map<String, String> data = new HashMap<>();
                         if (this.user.getLocations().stream().filter(l -> l.getId().equals(this.locationID)).findFirst().get().getProducers().size() > 1) {
                             data.put("email", this.user.getFirebaseUser().getEmail());
@@ -94,7 +94,7 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
                                     .addOnSuccessListener(result -> {
                                         ((LocationDetailActivity)context).finish();
                                     });
-                        }*/
+                        }
                         break;
                     default:
                         return false;
@@ -102,7 +102,7 @@ public class ProducerRecyclerViewAdapter extends RecyclerView.Adapter<ProducerRe
                 return true;
             });
             popupMenu.show();
-        });
+        }); */
     }
 
     @Override

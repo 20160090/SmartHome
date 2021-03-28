@@ -128,7 +128,6 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                                 });
                         break;
                     case R.id.delete:
-
                         new AlertDialog.Builder(context)
                                 .setTitle(context.getResources().getString(R.string.removeDevice))
                                 .setMessage(context.getResources().getString(R.string.reallyRemoveDevice1)+device.getName()+context.getResources().getString(R.string.reallyRemove))
@@ -233,12 +232,11 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                 typeNames.addAll(types.stream().map(PossibleDeviceType::getType).collect(toList()));
                 adapterD.notifyDataSetChanged();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-        ;
+
         companySpinner.setSelection(adapterC.getPosition(device.getCompany()));
 
         int pos = adapterD.getPosition(device.getPossibleDeviceType());

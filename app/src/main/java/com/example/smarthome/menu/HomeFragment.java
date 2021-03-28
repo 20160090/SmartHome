@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -34,7 +35,7 @@ public class HomeFragment extends Fragment {
     private TextView noLocation;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
-
+    private LinearLayout linearLayout;
 
 
     public HomeFragment() {
@@ -54,6 +55,7 @@ public class HomeFragment extends Fragment {
         this.add = view.findViewById(R.id.addFAB);
         this.noLocation = view.findViewById(R.id.noLocation);
         this.swipeRefreshLayout = view.findViewById(R.id.swipeContainer);
+        this.linearLayout = view.findViewById(R.id.linearLayoutHomeFragment);
         this.progressBar = view.findViewById(R.id.homeProgressBar);
         this.progressBar.setVisibility(View.GONE);
 
@@ -79,17 +81,13 @@ public class HomeFragment extends Fragment {
         });
 
         this.swipeRefreshLayout.setOnRefreshListener(() -> {
-
                     Parser parser = Parser.getInstance();
                     parser.loadLocations(t -> {
                         locations();
                         swipeRefreshLayout.setRefreshing(false);
                         return 0;
                     });
-
-                    //locations();
                 }
-
         );
         return view;
     }
@@ -100,55 +98,19 @@ public class HomeFragment extends Fragment {
     }
 
     public void locations() {
-        FragmentTransaction transaction1 = getChildFragmentManager().beginTransaction();
-        Fragment fragment1 = getChildFragmentManager().findFragmentByTag("location1");
-        Fragment fragment2 = getChildFragmentManager().findFragmentByTag("location2");
-        Fragment fragment3 = getChildFragmentManager().findFragmentByTag("location3");
-        Fragment fragment4 = getChildFragmentManager().findFragmentByTag("location4");
-        Fragment fragment5 = getChildFragmentManager().findFragmentByTag("location5");
-        if (fragment1 != null) {
-            transaction1.remove(fragment1);
-        }
-        if (fragment2 != null) {
-            transaction1.remove(fragment2);
-        }
-        if (fragment3 != null) {
-            transaction1.remove(fragment3);
-        }
-        if (fragment4 != null) {
-            transaction1.remove(fragment4);
-        }
-        if (fragment5 != null) {
-            transaction1.remove(fragment5);
-        }
-        transaction1.commit();
-
+        this.linearLayout.removeAllViews();
         for (int i = 0; i < this.user.getLocations().size(); i++) {
             Location loc = this.user.getLocations().get(i);
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             Fragment location = LocationFragment.newInstance(loc.getId());
-            switch (i) {
-                case 0:
-                    transaction.replace(R.id.fl1, location, "location1").commit();
-                    break;
-                case 1:
-                    transaction.replace(R.id.fl2, location, "location2").commit();
-                    break;
-                case 2:
-                    transaction.replace(R.id.fl3, location, "location3").commit();
-                    break;
-                case 3:
-                    transaction.replace(R.id.fl4, location, "location4").commit();
-                    break;
-                case 4:
-                    transaction.replace(R.id.fl5, location, "location5").commit();
-                    this.add.setVisibility(View.GONE);
-                    break;
-            }
+            transaction
+                    .setReorderingAllowed(true)
+                    .add(R.id.linearLayoutHomeFragment, location, null)
+                    .commit();
         }
+
         if (this.user.getLocations().size() == 0) {
             this.noLocation.setVisibility(View.VISIBLE);
-
         } else {
             this.noLocation.setVisibility(View.GONE);
         }
@@ -159,7 +121,8 @@ public class HomeFragment extends Fragment {
         this.swipeRefreshLayout.setEnabled(false);
         this.add.setEnabled(false);
     }
-    public void endLoadingDetail(){
+
+    public void endLoadingDetail() {
         this.progressBar.setVisibility(View.GONE);
         this.swipeRefreshLayout.setEnabled(true);
         this.add.setEnabled(true);

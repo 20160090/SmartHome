@@ -1,5 +1,6 @@
 package com.example.smarthome.menu;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -76,6 +77,7 @@ public class LocationFragment extends Fragment {
 
     }
 
+    @SuppressLint("NonConstantResourceId")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -149,21 +151,19 @@ public class LocationFragment extends Fragment {
         final TextView locationName = view.findViewById(R.id.houseTv);
         TextView devices = view.findViewById(R.id.devicesTv);
         TextView producers = view.findViewById(R.id.producerTv);
-        TextView consumption = view.findViewById(R.id.consumptionTv);
         final ConstraintLayout cl = view.findViewById(R.id.locationFragmentCL);
-
 
 
         locationName.setText(this.location.getName());
         if (this.location.getRunningNum() == 1) {
-            devices.setText(this.location.getRunningNum() + " Gerät läuft");
+            devices.setText(this.location.getRunningNum() + " Gerät läuft\nVerbrauch: " + this.location.getConsumption() + "W");
         } else {
-            devices.setText(this.location.getRunningNum() + " Geräte laufen");
+            devices.setText(this.location.getRunningNum() + " Geräte laufen\nVerbrauch: " + this.location.getConsumption() + "W");
         }
-        consumption.setText(this.location.getConsumption()+" W");
+        //  consumption.setText(this.location.getConsumption()+" W");
         producers.setText("Momentan erzeugte Watt:  " + this.location.getCurrentEnergy() + " W");
-        cl.setOnLongClickListener(view12 -> {
 
+        cl.setOnLongClickListener(popupView -> {
             PopupMenu popupMenu = new PopupMenu(view.getContext(), cl);
             popupMenu.inflate(R.menu.producer_menu);
             popupMenu.setOnMenuItemClickListener(menuItem -> {
@@ -204,17 +204,18 @@ public class LocationFragment extends Fragment {
     }
 
     public void editLocation() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         final View locationPopupView = getLayoutInflater().inflate(R.layout.popup_location_edit, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(locationPopupView);
+        Dialog dialog = builder.create();
+        dialog.show();
+
         ProgressBar progressBar = locationPopupView.findViewById(R.id.pB);
         EditText name = locationPopupView.findViewById(R.id.name);
         Button btnSave = locationPopupView.findViewById(R.id.saveBtn);
         Button btnCancel = locationPopupView.findViewById(R.id.backBtn);
-        name.setText(this.location.getName());
 
-        builder.setView(locationPopupView);
-        Dialog dialog = builder.create();
-        dialog.show();
+        name.setText(this.location.getName());
 
         btnSave.setOnClickListener(view -> {
             progressBar.setVisibility(View.VISIBLE);
@@ -236,6 +237,7 @@ public class LocationFragment extends Fragment {
                         Toast.makeText(getContext(), "Standort geändert", Toast.LENGTH_LONG).show();
                         this.location.setName(name.getText().toString());
                         dialog.dismiss();
+                        homeFragment.locations();
                     });
         });
         btnCancel.setOnClickListener(view -> dialog.dismiss());

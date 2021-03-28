@@ -73,15 +73,13 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
         loginBtn.setOnClickListener(view -> loginUserAccount());
+
         if (this.mAuth.getCurrentUser() != null) {
             if (this.mAuth.getCurrentUser().isEmailVerified()) {
-
                 this.user.setFirebaseUser(this.mAuth.getCurrentUser());
-
                 this.progressBar.setVisibility(View.VISIBLE);
                 this.loadingText.setVisibility(View.VISIBLE);
                 this.linearLayout.setVisibility(View.GONE);
-
                 loadData();
 
             } else {
@@ -93,12 +91,9 @@ public class LoginActivity extends AppCompatActivity {
     private void loadData() {
         this.parser.callCompanies();
         this.parser.loadLocations(t -> {
-
             Intent menu = new Intent(LoginActivity.this, MenuActivity.class);
             startActivity(menu);
             finish();
-
-
             return 0;
         });
     }

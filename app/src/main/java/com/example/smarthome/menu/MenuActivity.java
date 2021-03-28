@@ -13,6 +13,7 @@ import com.example.smarthome.R;
 import com.example.smarthome.model.Parser;
 import com.example.smarthome.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -56,13 +57,14 @@ public class MenuActivity extends AppCompatActivity {
                 Log.w("TOKEN", "Fetching FCM registration token failed", task.getException());
                 return;
             }
-            Map<String,String>data = new HashMap<>();
+            Map<String, String> data = new HashMap<>();
             data.put("email", User.getInstance().getFirebaseUser().getEmail());
             data.put("token", task.getResult());
             FirebaseFunctions.getInstance().getHttpsCallable("updateToken")
                     .call(data)
-                    .addOnSuccessListener(result -> System.out.println(result.getData()));
-
+                    .addOnFailureListener(e -> {
+                        e.printStackTrace();
+                    });
         });
 
     }

@@ -165,8 +165,8 @@ public class Parser {
                     try {
                         JSONArray arr = new JSONArray(task.getData().toString());
                         JSONObject object = arr.getJSONObject(0);
-                        location.setConsumption(object.getDouble("produce")-object.getDouble("consume"));
-
+                       // location.setConsumption(object.getDouble("produce")-object.getDouble("consume"));
+                        location.setConsumption(object.getDouble("consume"));
                     } catch (JSONException e) {
                         e.printStackTrace();
 

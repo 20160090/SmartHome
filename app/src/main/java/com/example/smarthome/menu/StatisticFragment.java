@@ -108,54 +108,6 @@ public class StatisticFragment extends Fragment {
         return lineData;
     }
 
-    private LineData splitDataPosNeg(ArrayList<BarEntry> entries) {
-        boolean isPos = false;
-        LineData lineData = new LineData();
-        ArrayList<Entry> actEntries = new ArrayList<>();
-        actEntries.add(entries.get(0));
-        if (entries.get(0).getY() > 0) {
-            isPos = true;
-        }
-        for (Entry act : entries) {
-            if (act.getY() > 0) {
-                if (isPos) {
-                    actEntries.add(act);
-                } else {
-                    isPos=true;
-                    LineDataSet lineDataSet = new LineDataSet(actEntries, "neg");
-                    lineDataSet.setFillColor(R.color.colorAccentTransparent);
-                    lineDataSet.setLineWidth(1.75f);
-                    lineDataSet.setCircleRadius(3f);
 
-                    lineData.addDataSet(lineDataSet);
-                    actEntries = new ArrayList<>();
-                    actEntries.add(act);
-                }
-            }
-            else{
-                if(!isPos){
-                    actEntries.add(act);
-                }
-                else{
-                    isPos=false;
-                    LineDataSet lineDataSet = new LineDataSet(actEntries, "pos");
-                    lineDataSet.setFillColor(R.color.colorAccent);
-                    lineDataSet.setLineWidth(1.75f);
-                    lineDataSet.setCircleRadius(3f);
-
-                    lineData.addDataSet(lineDataSet);
-                    actEntries = new ArrayList<>();
-                    actEntries.add(act);
-                }
-            }
-
-        }
-        return lineData;
-
-    }
-
-    private boolean getSign(Entry entry) {
-        return entry.getY() > 0;
-    }
 
 }

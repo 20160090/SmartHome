@@ -105,7 +105,7 @@ public class LocationDetailActivity extends AppCompatActivity {
         recyclerViewWeather.setNestedScrollingEnabled(false);
         recyclerViewWeather.setAdapter(adapterWeather);
         //Forecast in reverse order
-        recyclerViewWeather.scrollToPosition(location.getForecast().size() - 1);
+       // recyclerViewWeather.scrollToPosition(location.getForecast().size() - 1);
         snapHelper.attachToRecyclerView(recyclerViewWeather);
 
         this.adapterDevices = new DevicesRecyclerViewAdapter(this, this.location.getDevices(), this.locationID);
